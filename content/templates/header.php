@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Мой сайт</title>
+        <link rel="stylesheet" href="/assets/css/style_templates.css">
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>Мой сайт</h1>
+            </div>
+            <div class="nav">
+                <a href="/">Главная</a>
+                <a href="/articles">Статьи</a>
+                <a href="/calculator">Калькулятор</a>
+                <a href="/about">О нас</a>
+                <a href="/contact">Контакты</a>
+            </div>
+        </div>
+    </body>
+</html>

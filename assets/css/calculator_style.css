@@ -1,0 +1,30 @@
+button {
+    width: 70px;
+    height: 40px;
+    margin: 4px;
+}
+
+input {
+    width: 100%;
+    margin: 4px;
+    border: none;
+    font-size: 35px;
+}
+
+.calculator {
+    max-width: 500px;
+    align-items: center;
+    box-sizing: inherit;
+    margin: auto 10px;
+}
+
+#calc-form {
+    max-width: 50%;
+    text-align: center;
+    border: 1px black;
+}
+
+.header_calc {
+    margin: 4px;
+}
+
