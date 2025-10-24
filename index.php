@@ -11,8 +11,10 @@ $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
 $whoops->register();
 
 use App\Controllers\PageController;
+use App\Views\PageView;
 
 $pages = new PageController();
+$views = new PageView();
 
 $uri = $_SERVER['REQUEST_URI'];
 $path = parse_url($uri, PHP_URL_PATH);
@@ -41,7 +43,7 @@ switch ($path) {
         break;
 
     default:
-        $pages->show404();
+        $views->show404();
         break;
 
 }

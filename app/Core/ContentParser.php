@@ -3,6 +3,13 @@ namespace App\Core;
 
 class ContentParser
 {
+    public $md_parser;
+
+    public function __construct()
+    {
+        $this->md_parser = new FileManager();
+    }
+
     public function getPage($name)
     {
         $file = ROOT_DIR."/content/pages/{$name}.php";
@@ -19,7 +26,6 @@ class ContentParser
 
         return [
             'title' => $title,
-            'content' => $this->simpleMarkdown($body)
         ];
     }
 
@@ -39,18 +45,8 @@ class ContentParser
 
         return [
             'title' => $title,
-            'content' => $this->simpleMarkdown($body)
+            'content' => $this->md_parser->parse($body)
         ];
     }
 
-    private function simpleMarkdown($text)
-    {
-        $text = preg_replace('/### (.*)/', '<h3>$1</h3>', $text);
-        $text = preg_replace('/## (.*)/', '<h2>$1</h2>', $text);
-        $text = preg_replace('/# (.*)/', '<h1>$1</h1>', $text);
-        $text = preg_replace('/\*\*(.*?)\*\*/', '<strong>$1</strong>', $text);
-        $text = preg_replace('/\*(.*?)\*/', '<em>$1</em>', $text);
-        $text = '<p>' . preg_replace('/\n\n/', '</p><p>', $text) . '</p>';
-        return $text;
-    }
 }
