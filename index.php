@@ -26,9 +26,6 @@ switch ($path) {
         $pages->home();
         break;
 
-    case 'calculator':
-        $pages->calculator();
-        break;
 
     case 'about':
         $pages->about();
