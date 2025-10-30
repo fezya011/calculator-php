@@ -68,6 +68,7 @@
         <ul class="nav-links">
             <li><a href="/">Главная</a></li>
             <li><a href="/articles">Статьи</a></li>
+            <li><a href="/categories">Категории</a></li> <!-- Новая ссылка -->
             <li><a href="/about">О нас</a></li>
             <li><a href="/contact">Контакты</a></li>
         </ul>

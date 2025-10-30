@@ -24,6 +24,9 @@ class PageView
         } elseif ($template === 'article') {
             // Для отдельной статьи
             $this->renderArticlePage($article ?? []);
+        } elseif ($template === 'categories') {
+            // Для страницы категорий
+            $this->renderCategoriesPage($categories ?? []);
         } elseif ($template === '404') {
             // Для страницы 404
             $this->render404Page();
@@ -38,16 +41,38 @@ class PageView
 
     private function renderArticlesPage($articles)
     {
+        $current_category = $_GET['category'] ?? '';
+        $contentParser = new \App\Core\ContentParser();
+        $categoryInfo = $contentParser->getCategoryInfo($current_category);
         ?>
         <div class="articles-page">
-            <h1>📚 Все статьи</h1>
+            <div class="page-header">
+                <h1>
+                    <?php if ($current_category): ?>
+                        <?= htmlspecialchars($categoryInfo['icon'] ?? '📁') ?> <?= htmlspecialchars($current_category) ?>
+                    <?php else: ?>
+                        📚 Все статьи
+                    <?php endif; ?>
+                </h1>
+
+                <?php if ($current_category && !empty($categoryInfo['description'])): ?>
+                    <p class="category-description"><?= htmlspecialchars($categoryInfo['description']) ?></p>
+                <?php endif; ?>
+            </div>
 
             <?php if (!empty($articles)): ?>
                 <div class="articles-grid">
                     <?php foreach ($articles as $article): ?>
                         <div class="article-card">
+                            <!-- Категория статьи -->
+                            <?php if (isset($article['category_info'])): ?>
+                                <div class="article-category" style="background: <?= htmlspecialchars($article['category_info']['color'] ?? '#667eea') ?>;">
+                                    <?= htmlspecialchars($article['category_info']['icon'] ?? '📁') ?> <?= htmlspecialchars($article['meta']['category'] ?? 'Общее') ?>
+                                </div>
+                            <?php endif; ?>
+
                             <h2>
-                                <a href="/article/<?= $article['meta']['slug'] ?? '' ?>">
+                                <a href="/article/<?= htmlspecialchars($article['slug'] ?? '') ?>">
                                     <?= htmlspecialchars($article['title'] ?? 'Без названия') ?>
                                 </a>
                             </h2>
@@ -61,15 +86,31 @@ class PageView
                                 <?= $article['excerpt'] ?? '' ?>
                             </div>
 
-                            <a href="/article/<?= $article['meta']['slug'] ?? '' ?>" class="read-more">
+                            <a href="/article/<?= htmlspecialchars($article['slug'] ?? '') ?>" class="read-more">
                                 Читать далее →
                             </a>
                         </div>
                     <?php endforeach; ?>
                 </div>
+
+                <!-- Статистика -->
+                <div class="stats-container">
+                    <p>Найдено <?= count($articles) ?> <?= $this->getArticleWord(count($articles)) ?>
+                        <?php if ($current_category): ?>
+                            в категории "<?= htmlspecialchars($current_category) ?>"
+                        <?php endif; ?>
+                    </p>
+                </div>
             <?php else: ?>
                 <div class="no-articles">
-                    <p>😔 Статьи пока не добавлены</p>
+                    <p>
+                        <?php if ($current_category): ?>
+                            😔 В категории "<?= htmlspecialchars($current_category) ?>" нет статей
+                        <?php else: ?>
+                            😔 Статьи пока не добавлены
+                        <?php endif; ?>
+                    </p>
+                    <a href="/articles" class="back-to-articles">📚 Все статьи</a>
                 </div>
             <?php endif; ?>
         </div>
@@ -79,6 +120,22 @@ class PageView
                 max-width: 1200px;
                 margin: 0 auto;
                 padding: 20px;
+            }
+
+            .page-header {
+                margin-bottom: 2rem;
+            }
+
+            .page-header h1 {
+                margin: 0 0 0.5rem 0;
+                font-size: 2rem;
+                color: #333;
+            }
+
+            .category-description {
+                margin: 0;
+                color: #666;
+                font-size: 1.1rem;
             }
 
             .articles-grid {
@@ -93,16 +150,28 @@ class PageView
                 padding: 25px;
                 border-radius: 10px;
                 box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-                border-left: 4px solid #667eea;
                 transition: transform 0.3s;
+                position: relative;
             }
 
             .article-card:hover {
                 transform: translateY(-5px);
             }
 
+            .article-category {
+                position: absolute;
+                top: -10px;
+                left: 1rem;
+                background: #667eea;
+                color: white;
+                padding: 0.3rem 0.8rem;
+                border-radius: 15px;
+                font-size: 0.75rem;
+                font-weight: 500;
+            }
+
             .article-card h2 {
-                margin: 0 0 15px 0;
+                margin: 0.5rem 0 15px 0;
                 font-size: 1.4rem;
             }
 
@@ -131,13 +200,30 @@ class PageView
 
             .read-more {
                 display: inline-block;
-                color: #667eea;
+                background: #667eea;
+                color: white;
+                padding: 0.5rem 1rem;
+                border-radius: 5px;
                 text-decoration: none;
-                font-weight: 500;
+                font-size: 0.9rem;
+                transition: background 0.3s;
             }
 
             .read-more:hover {
-                text-decoration: underline;
+                background: #5a6fd8;
+            }
+
+            .stats-container {
+                text-align: center;
+                margin-top: 2rem;
+                padding: 1rem;
+                background: #f8f9fa;
+                border-radius: 8px;
+            }
+
+            .stats-container p {
+                margin: 0;
+                color: #666;
             }
 
             .no-articles {
@@ -145,34 +231,88 @@ class PageView
                 padding: 60px 20px;
                 color: #666;
             }
+
+            .no-articles p {
+                margin-bottom: 1.5rem;
+                font-size: 1.1rem;
+            }
+
+            .back-to-articles {
+                display: inline-block;
+                background: #667eea;
+                color: white;
+                padding: 0.75rem 1.5rem;
+                border-radius: 6px;
+                text-decoration: none;
+                transition: background 0.3s;
+            }
+
+            .back-to-articles:hover {
+                background: #5a6fd8;
+            }
+
+            @media (max-width: 768px) {
+                .articles-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .articles-page {
+                    padding: 1rem;
+                }
+
+                .article-card {
+                    padding: 1.5rem;
+                }
+            }
         </style>
         <?php
     }
 
     private function renderArticlePage($article)
     {
+        $contentParser = new \App\Core\ContentParser();
+        $categoryInfo = $contentParser->getCategoryInfo($article['meta']['category'] ?? '');
         ?>
         <div class="article-detail">
             <nav class="breadcrumb">
-                <a href="/articles">← Назад к статьям</a>
+                <a href="/articles<?= isset($article['meta']['category']) && $article['meta']['category'] ? '?category=' . urlencode($article['meta']['category']) : '' ?>">
+                    ← Назад к статьям
+                </a>
             </nav>
 
             <article>
+                <!-- Категория статьи -->
+                <?php if (isset($article['meta']['category']) && $article['meta']['category']): ?>
+                    <div class="article-category-badge" style="background: <?= htmlspecialchars($categoryInfo['color'] ?? '#667eea') ?>;">
+                        <?= htmlspecialchars($categoryInfo['icon'] ?? '📁') ?> <?= htmlspecialchars($article['meta']['category']) ?>
+                    </div>
+                <?php endif; ?>
+
                 <header class="article-header">
                     <h1><?= htmlspecialchars($article['title'] ?? 'Статья') ?></h1>
 
                     <div class="article-meta">
                         <span class="author">👤 <?= htmlspecialchars($article['meta']['author'] ?? 'Автор') ?></span>
                         <span class="date">📅 <?= $this->formatDate($article['meta']['date'] ?? '') ?></span>
+                        <?php if (isset($article['meta']['category']) && $article['meta']['category']): ?>
+                            <span class="category">
+                                <?= htmlspecialchars($categoryInfo['icon'] ?? '📁') ?>
+                                <a href="/articles?category=<?= urlencode($article['meta']['category']) ?>" style="color: #667eea; text-decoration: none;">
+                                    <?= htmlspecialchars($article['meta']['category']) ?>
+                                </a>
+                            </span>
+                        <?php endif; ?>
                     </div>
                 </header>
 
                 <div class="article-content">
-                    <?= $article['content'] ?? '' ?>
+                    <?= $article['content'] ?? 'Контент статьи отсутствует' ?>
                 </div>
 
                 <footer class="article-footer">
-                    <a href="/articles" class="btn-back">← Все статьи</a>
+                    <a href="/articles<?= isset($article['meta']['category']) && $article['meta']['category'] ? '?category=' . urlencode($article['meta']['category']) : '' ?>" class="btn-back">
+                        ← <?= isset($article['meta']['category']) && $article['meta']['category'] ? 'К категории ' . htmlspecialchars($article['meta']['category']) : 'Все статьи' ?>
+                    </a>
                 </footer>
             </article>
         </div>
@@ -197,6 +337,17 @@ class PageView
                 text-decoration: underline;
             }
 
+            .article-category-badge {
+                display: inline-block;
+                background: #667eea;
+                color: white;
+                padding: 0.4rem 1rem;
+                border-radius: 15px;
+                font-size: 0.8rem;
+                font-weight: 500;
+                margin-bottom: 1rem;
+            }
+
             .article-header {
                 margin-bottom: 30px;
                 border-bottom: 2px solid #f0f0f0;
@@ -215,6 +366,7 @@ class PageView
                 gap: 20px;
                 color: #666;
                 font-size: 0.95rem;
+                flex-wrap: wrap;
             }
 
             .article-content {
@@ -293,6 +445,169 @@ class PageView
 
             .btn-back:hover {
                 background: #5a6fd8;
+            }
+
+            @media (max-width: 768px) {
+                .article-detail {
+                    padding: 1rem;
+                }
+
+                .article-header h1 {
+                    font-size: 2rem;
+                }
+
+                .article-meta {
+                    gap: 1rem;
+                    font-size: 0.9rem;
+                }
+            }
+        </style>
+        <?php
+    }
+
+    private function renderCategoriesPage($categories)
+    {
+        $contentParser = new \App\Core\ContentParser();
+        ?>
+        <div class="categories-page">
+            <div class="page-header">
+                <h1>📂 Категории статей</h1>
+                <p class="page-description">Все категории нашего сайта с количеством статей</p>
+            </div>
+
+            <?php if (!empty($categories)): ?>
+                <div class="categories-grid">
+                    <?php foreach ($categories as $category): ?>
+                        <?php
+                        $articlesCount = $contentParser->getArticlesCountByCategory($category['name']);
+                        if ($articlesCount > 0):
+                            ?>
+                            <div class="category-card" style="border-left: 4px solid <?= htmlspecialchars($category['color']) ?>;">
+                                <div class="category-header">
+                                    <span class="category-icon"><?= htmlspecialchars($category['icon']) ?></span>
+                                    <h3><?= htmlspecialchars($category['name']) ?></h3>
+                                </div>
+
+                                <p class="category-description"><?= htmlspecialchars($category['description']) ?></p>
+
+                                <div class="category-footer">
+                                    <span class="articles-count"><?= $articlesCount ?> <?= $this->getArticleWord($articlesCount) ?></span>
+                                    <a href="/articles?category=<?= urlencode($category['name']) ?>" class="view-category">
+                                        Смотреть →
+                                    </a>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <div class="no-categories">
+                    <p>😔 Категории пока не добавлены</p>
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <style>
+            .categories-page {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+
+            .page-header {
+                margin-bottom: 2rem;
+                text-align: center;
+            }
+
+            .page-header h1 {
+                margin: 0 0 0.5rem 0;
+                font-size: 2rem;
+                color: #333;
+            }
+
+            .page-description {
+                margin: 0;
+                color: #666;
+                font-size: 1.1rem;
+            }
+
+            .categories-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 20px;
+            }
+
+            .category-card {
+                background: white;
+                padding: 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                transition: transform 0.3s;
+            }
+
+            .category-card:hover {
+                transform: translateY(-3px);
+            }
+
+            .category-header {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .category-icon {
+                font-size: 1.5rem;
+            }
+
+            .category-header h3 {
+                margin: 0;
+                color: #333;
+                font-size: 1.2rem;
+            }
+
+            .category-description {
+                color: #666;
+                line-height: 1.5;
+                margin-bottom: 1rem;
+            }
+
+            .category-footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .articles-count {
+                color: #666;
+                font-size: 0.9rem;
+            }
+
+            .view-category {
+                color: #667eea;
+                text-decoration: none;
+                font-weight: 500;
+                transition: color 0.3s;
+            }
+
+            .view-category:hover {
+                color: #5a6fd8;
+            }
+
+            .no-categories {
+                text-align: center;
+                padding: 60px 20px;
+                color: #666;
+            }
+
+            @media (max-width: 768px) {
+                .categories-page {
+                    padding: 1rem;
+                }
+
+                .categories-grid {
+                    grid-template-columns: 1fr;
+                }
             }
         </style>
         <?php
@@ -383,6 +698,17 @@ class PageView
         }
 
         return date($format, $timestamp);
+    }
+
+    private function getArticleWord($count)
+    {
+        if ($count % 10 == 1 && $count % 100 != 11) {
+            return 'статья';
+        } elseif (in_array($count % 10, [2,3,4]) && !in_array($count % 100, [12,13,14])) {
+            return 'статьи';
+        } else {
+            return 'статей';
+        }
     }
 
     public function show404()

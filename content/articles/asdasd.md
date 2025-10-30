@@ -1,6 +1,6 @@
 ---
-title: KOTE пожаловать в FlatCMS
-categories: game
+title: Тестовая статья222222222222
+category: фывф
 author: Администратор
 date: 2024-01-15
 ---

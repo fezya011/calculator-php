@@ -1,43 +1,82 @@
 <?php
+// Включаем вывод ошибок
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+require_once __DIR__ . '/vendor/autoload.php';
 
-require_once "vendor/autoload.php";
-include_once "config/constants.php";
+// Определяем пути
+define('ROOT_DIR', $_SERVER['DOCUMENT_ROOT']);
+define('CONTENT_PATH', ROOT_DIR . '/content');
+define('VIEWS_PATH', ROOT_DIR . '/content/templates');
+define('ASSETS_PATH', ROOT_DIR . '/assets');
+define('UPLOAD_PATH', ROOT_DIR . '/assets/uploads');
 
-$whoops = new \Whoops\Run;
-$whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
-$whoops->register();
+// Автозагрузка классов
+spl_autoload_register(function ($className) {
+    $className = str_replace('App\\', '', $className);
+    $file = ROOT_DIR . '/app/' . str_replace('\\', '/', $className) . '.php';
+
+    if (file_exists($file)) {
+        require_once $file;
+        return true;
+    }
+    return false;
+});
 
 use App\Controllers\PageController;
-use App\Views\PageView;
+use App\Controllers\ArticleController;
 
-$pages = new PageController();
-$views = new PageView();
+$pageController = new PageController();
+$articleController = new ArticleController();
 
+// Получаем текущий путь
 $uri = $_SERVER['REQUEST_URI'];
 $path = parse_url($uri, PHP_URL_PATH);
-
 $path = trim($path, '/');
 
+// Убираем .php если есть
+$path = str_replace('.php', '', $path);
+
+// Маршрутизация
 switch ($path) {
     case '':
-        $pages->home();
+        $pageController->home();
         break;
-
-
     case 'about':
-        $pages->about();
+        $pageController->about();
         break;
-
     case 'contact':
-        $pages->contact();
+        $pageController->contact();
         break;
-
+    case 'calculator':
+        $pageController->calculator();
+        break;
+    case 'more':
+        $pageController->more();
+        break;
     case 'articles':
-        $pages->articles();
+        $articleController->index();
         break;
-
+    case 'categories':
+        $articleController->categories();
+        break;
     default:
-        $views->show404();
+        // Динамические маршруты для статей по категориям
+        if (preg_match('#^articles/category/([a-zA-Z0-9\-_]+)$#', $path, $matches)) {
+            $category = $matches[1];
+            $articleController->index($category);
+        }
+        // Динамические маршруты для конкретных статей
+        elseif (preg_match('#^article/([a-zA-Z0-9\-_]+)$#', $path, $matches)) {
+            $slug = $matches[1];
+            $articleController->show($slug);
+        }
+        // Статические страницы
+        elseif (preg_match('#^page/(.+)$#', $path, $matches)) {
+            $pageController->show($matches[1]);
+        }
+        else {
+            $pageController->notFound();
+        }
         break;
-
 }

@@ -1,94 +1,423 @@
-<div style="
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 4rem 2rem;
-    border-radius: 15px;
-    text-align: center;
-    margin-bottom: 3rem;
-">
-    <h1 style="font-size: 3rem; margin-bottom: 1rem;">Добро пожаловать в FlatCMS</h1>
-    <p style="font-size: 1.2rem; margin-bottom: 2rem; opacity: 0.9;">
-        Простая и эффективная система управления контентом
-    </p>
-    <a href="/articles" style="
-        display: inline-block;
-        background: white;
-        color: #667eea;
-        padding: 1rem 2rem;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: bold;
-        transition: transform 0.3s;
-    " onmouseover="this.style.transform='translateY(-2px)'"
-       onmouseout="this.style.transform='translateY(0)'">
-        📖 Читать статьи
-    </a>
-</div>
+<?php
+$articles = $articles ?? [];
+$title = $title ?? 'Главная страница';
+$content = $content ?? '';
+$helper = new \App\Core\Helper();
+?>
 
-<h2 style="
-    text-align: center;
-    margin-bottom: 2rem;
-    color: #333;
-    font-size: 2rem;
-">🔥 Последние статьи</h2>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= $helper::sanitize($title) ?></title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<div style="display: grid; gap: 1.5rem;">
-    <?php if (isset($articles) && !empty($articles)): ?>
-        <?php foreach ($articles as $article): ?>
-            <div style="
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #667eea;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #333;
+            font-size: 2rem;
+        }
+
+        .articles-grid {
+            display: grid;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .article-card {
             background: white;
             padding: 1.5rem;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        " onmouseover="this.style.transform='translateY(-5px)'"
-                 onmouseout="this.style.transform='translateY(0)'">
+            transition: all 0.3s ease;
+        }
 
-                <h3 style="margin-bottom: 1rem;">
-                    <a href="/article/<?= $article['meta']['slug'] ?? '' ?>" style="
-                    color: #333;
-                    text-decoration: none;
-                    font-size: 1.3rem;
-                "><?= htmlspecialchars($article['meta']['title'] ?? 'Без названия') ?></a>
-                </h3>
+        .article-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
 
-                <div style="
-                display: flex;
-                gap: 1rem;
-                margin-bottom: 1rem;
-                color: #666;
-                font-size: 0.9rem;
-            ">
-                    <span>👤 <?= htmlspecialchars($article['meta']['author'] ?? 'Автор') ?></span>
-                    <span>📅 <?= \App\Core\Helper::formatDate($article['meta']['date'] ?? '') ?></span>
-                </div>
+        .article-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            gap: 1rem;
+        }
 
-                <p style="color: #555; line-height: 1.6; margin-bottom: 1rem;">
-                    <?= \App\Core\Helper::truncate(strip_tags($article['content'] ?? ''), 150) ?>
-                </p>
+        .article-title {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
 
-                <a href="/article/<?= $article['meta']['slug'] ?? '' ?>" style="
-                display: inline-block;
-                background: #667eea;
-                color: white;
-                padding: 0.5rem 1rem;
-                border-radius: 5px;
-                text-decoration: none;
-                font-size: 0.9rem;
-            ">Читать далее →</a>
-            </div>
-        <?php endforeach; ?>
-    <?php else: ?>
-        <div style="
-        text-align: center;
-        padding: 3rem;
-        background: white;
-        border-radius: 10px;
-        color: #666;
-    ">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">📭</div>
-            <h3 style="margin-bottom: 0.5rem;">Статьи пока не добавлены</h3>
-            <p>Администратор еще не опубликовал ни одной статьи.</p>
+        .article-title a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .article-title a:hover {
+            color: #667eea;
+        }
+
+        .article-category {
+            background: #667eea;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        .article-meta {
+            display: flex;
+            gap: 1rem;
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .article-excerpt {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .read-more {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background 0.3s ease;
+        }
+
+        .read-more:hover {
+            background: #5a6fd8;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            border-radius: 10px;
+            color: #666;
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .page-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 3rem;
+            line-height: 1.7;
+        }
+
+        .page-content h1,
+        .page-content h2,
+        .page-content h3 {
+            margin: 1.5rem 0 1rem 0;
+            color: #333;
+        }
+
+        .page-content p {
+            margin-bottom: 1rem;
+        }
+
+        .page-content ul,
+        .page-content ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .feature-description {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                padding: 3rem 1.5rem;
+            }
+
+            .hero-title {
+                font-size: 2.2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+
+            .article-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .article-category {
+                align-self: flex-start;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Герой секция -->
+    <div class="hero">
+        <h1 class="hero-title">Добро пожаловать в FlatCMS</h1>
+        <p class="hero-subtitle">
+            Простая и эффективная система управления контентом
+        </p>
+        <div class="cta-buttons">
+            <a href="/articles" class="btn btn-primary">
+                📖 Читать статьи
+            </a>
+            <a href="/about" class="btn btn-secondary">
+                ℹ️ О проекте
+            </a>
+        </div>
+    </div>
+
+    <!-- Контент страницы -->
+    <?php if (!empty($content)): ?>
+        <div class="page-content">
+            <?= $content ?>
         </div>
     <?php endif; ?>
+
+    <!-- Последние статьи -->
+    <h2 class="section-title">🔥 Последние статьи</h2>
+
+    <?php if (!empty($articles)): ?>
+        <div class="articles-grid">
+            <?php foreach ($articles as $article): ?>
+                <article class="article-card">
+                    <div class="article-header">
+                        <div>
+                            <h3 class="article-title">
+                                <a href="/article/<?= $helper::sanitize($article['slug']) ?>">
+                                    <?= $helper::sanitize($article['title']) ?>
+                                </a>
+                            </h3>
+                        </div>
+                        <?php if (isset($article['meta']['category']) && $article['meta']['category']): ?>
+                            <div class="article-category" style="background: <?= $helper::sanitize($article['category_info']['color'] ?? '#667eea') ?>;">
+                                <?= $helper::sanitize($article['category_info']['icon'] ?? '📁') ?> <?= $helper::sanitize($article['meta']['category']) ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="article-meta">
+                        <span class="meta-item">👤 <?= $helper::sanitize($article['meta']['author'] ?? 'Автор') ?></span>
+                        <span class="meta-item">📅 <?= $helper::formatDate($article['meta']['date'] ?? '', 'd.m.Y') ?></span>
+                        <span class="meta-item">⏱️ ~5 мин</span>
+                    </div>
+
+                    <p class="article-excerpt">
+                        <?= $helper::sanitize($article['excerpt'] ?? 'Описание статьи отсутствует') ?>
+                    </p>
+
+                    <a href="/article/<?= $helper::sanitize($article['slug']) ?>" class="read-more">
+                        Читать далее →
+                    </a>
+                </article>
+            <?php endforeach; ?>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="/articles" class="btn btn-primary" style="background: #667eea; color: white; border: none;">
+                📚 Все статьи
+            </a>
+        </div>
+    <?php else: ?>
+        <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <h3>Статьи пока не добавлены</h3>
+            <p>Администратор еще не опубликовал ни одной статьи.</p>
+            <a href="/articles" class="read-more" style="margin-top: 1rem;">Обновить</a>
+        </div>
+    <?php endif; ?>
+
+    <!-- Особенности -->
+    <h2 class="section-title">✨ Возможности</h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">📝</div>
+            <h3 class="feature-title">Простое редактирование</h3>
+            <p class="feature-description">
+                Создавайте и редактируйте статьи в формате Markdown с удобным редактором
+            </p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📂</div>
+            <h3 class="feature-title">Категории</h3>
+            <p class="feature-description">
+                Организуйте статьи по категориям для удобной навигации
+            </p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3 class="feature-title">Быстрая работа</h3>
+            <p class="feature-description">
+                Оптимизированная система без лишних зависимостей
+            </p>
+        </div>
+    </div>
 </div>
+
+<script>
+    // Автоматический расчет времени чтения для статей на главной
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.article-card').forEach(card => {
+            const excerpt = card.querySelector('.article-excerpt');
+            if (excerpt) {
+                const text = excerpt.textContent || excerpt.innerText;
+                const wordCount = text.trim().split(/\s+/).length;
+                const readingTime = Math.max(1, Math.ceil(wordCount / 200));
+
+                const timeElement = card.querySelector('.meta-item:last-child');
+                if (timeElement) {
+                    timeElement.textContent = `⏱️ ~${readingTime} мин`;
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

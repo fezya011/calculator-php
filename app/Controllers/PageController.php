@@ -23,7 +23,7 @@ class PageController
         $this->page_view->render('home', [
             'title' => $page['title'] ?? 'Главная страница',
             'content' => $page['content'] ?? '',
-            'articles' => $articles // Добавляем статьи в данные
+            'articles' => $articles
         ]);
     }
 
@@ -45,29 +45,58 @@ class PageController
         ]);
     }
 
-    public function articles() {
-        $articles = $this->parser->getArticles();
-        $page = $this->parser->getPage('articles');
-
-        $this->page_view->render('articles', [
-            'title' => $page['title'] ?? 'Статьи',
-            'content' => $page['content'] ?? '',
-            'articles' => $articles
+    public function calculator()
+    {
+        $page = $this->parser->getPage('calculator');
+        $this->page_view->render('calculator', [
+            'title' => $page['title'] ?? 'Калькулятор',
+            'content' => $page['content'] ?? ''
         ]);
     }
 
-    public function article($slug) {
-        $article = $this->parser->getArticle($slug);
+    public function more()
+    {
+        $page = $this->parser->getPage('more');
+        $this->page_view->render('more', [
+            'title' => $page['title'] ?? 'Дополнительно',
+            'content' => $page['content'] ?? ''
+        ]);
+    }
 
-        if (!$article) {
-            $this->notFound();
-            return;
+    public function articles() {
+        $category = $_GET['category'] ?? null;
+
+        if ($category) {
+            // Статьи по категории
+            $articles = $this->parser->getArticlesByCategory($category);
+            $categoryInfo = $this->parser->getCategoryInfo($category);
+            $title = $categoryInfo['icon'] . " " . $category;
+        } else {
+            // Все статьи
+            $articles = $this->parser->getArticles();
+            $title = "📚 Все статьи";
         }
 
-        $this->page_view->render('article', [
-            'title' => $article['title'] ?? 'Статья',
-            'content' => $article['content'] ?? '',
-            'article' => $article // Добавляем статью в данные
+        $categories = $this->parser->getCategories();
+
+        $this->page_view->render('articles', [
+            'title' => $title,
+            'content' => '',
+            'articles' => $articles,
+            'categories' => $categories,
+            'current_category' => $category,
+            'category_info' => $categoryInfo ?? null
+        ]);
+    }
+
+    public function categories()
+    {
+        $categories = $this->parser->getCategories();
+
+        $this->page_view->render('categories', [
+            'title' => 'Категории статей',
+            'content' => '',
+            'categories' => $categories
         ]);
     }
 

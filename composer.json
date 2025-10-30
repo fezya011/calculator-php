@@ -1,19 +1,22 @@
 {
-    "name": "user/calculator-php",
-    "type": "project",
-    "license": "MIT",
-    "autoload": {
-        "psr-4": {
-            "App\\": "app/"
-        }
-    },
-    "authors": [
-        {
-            "name": "asdfgh33"
-        }
-    ],
-    "require": {
-        "filp/whoops": "^2.18",
-        "erusev/parsedown": "^1.7"
+  "name": "vendor_name/calculator-php",
+  "description": "description",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "type": "project",
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
     }
+  },
+  "authors": [
+    {
+      "name": "Fezil13",
+      "email": "email@example.com"
+    }
+  ],
+  "require": {
+    "erusev/parsedown": "^1.7",
+    "miladrahimi/phprouter": "5.*"
+  }
 }
