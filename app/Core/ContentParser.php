@@ -42,6 +42,7 @@ class ContentParser
         }
 
         $content = file_get_contents($file);
+
         $parsed = $this->parseMarkdownWithFrontMatter($content);
 
         // Генерируем УНИКАЛЬНЫЙ ID на основе slug и содержимого файла

@@ -17,6 +17,10 @@
   ],
   "require": {
     "erusev/parsedown": "^1.7",
-    "miladrahimi/phprouter": "5.*"
+    "league/route": "^6.2",
+    "laminas/laminas-httphandlerrunner": "^2.13",
+    "laminas/laminas-diactoros": "^3.8",
+    "league/container": "^5.1",
+    "twig/twig": "^3.22"
   }
 }

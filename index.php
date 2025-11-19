@@ -1,82 +1,33 @@
 <?php
-// Включаем вывод ошибок
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+
+use Whoops\Handler\PrettyPageHandler;
+use Whoops\Run;
+
 require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/config/constants.php';
 
-// Определяем пути
-define('ROOT_DIR', $_SERVER['DOCUMENT_ROOT']);
-define('CONTENT_PATH', ROOT_DIR . '/content');
-define('VIEWS_PATH', ROOT_DIR . '/content/templates');
-define('ASSETS_PATH', ROOT_DIR . '/assets');
-define('UPLOAD_PATH', ROOT_DIR . '/assets/uploads');
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-// Автозагрузка классов
-spl_autoload_register(function ($className) {
-    $className = str_replace('App\\', '', $className);
-    $file = ROOT_DIR . '/app/' . str_replace('\\', '/', $className) . '.php';
+$router = require (ROOT_DIR . '/app/Views/bootstrap.php');
 
-    if (file_exists($file)) {
-        require_once $file;
-        return true;
-    }
-    return false;
-});
+$request = Laminas\Diactoros\ServerRequestFactory::fromGlobals(
+    $_SERVER, $_GET, $_POST, $_COOKIE, $_FILES
+);
 
-use App\Controllers\PageController;
-use App\Controllers\ArticleController;
+$router->get('/', 'App\Controllers\PageController::index');
+$router->get('/about', 'App\Controllers\PageController::about');
+$router->get('/contact', 'App\Controllers\PageController::contact');
+$router->get('/calculator', 'App\Controllers\PageController::calculator');
+$router->get('/more', 'App\Controllers\PageController::more');
+$router->get('/articles', 'App\Controllers\PageController::articles');
+$router->get('/categories', 'App\Controllers\PageController::showCategories');
+$router->get('/article/{slug}', 'App\Controllers\PageController::showArticle');
+$router->get('/page/{name}', 'App\Controllers\PageController::showPage');
+$router->get('/{any:.*}', 'App\Controllers\PageController::notFound');
 
-$pageController = new PageController();
-$articleController = new ArticleController();
+$response = $router->dispatch($request);
 
-// Получаем текущий путь
-$uri = $_SERVER['REQUEST_URI'];
-$path = parse_url($uri, PHP_URL_PATH);
-$path = trim($path, '/');
-
-// Убираем .php если есть
-$path = str_replace('.php', '', $path);
-
-// Маршрутизация
-switch ($path) {
-    case '':
-        $pageController->home();
-        break;
-    case 'about':
-        $pageController->about();
-        break;
-    case 'contact':
-        $pageController->contact();
-        break;
-    case 'calculator':
-        $pageController->calculator();
-        break;
-    case 'more':
-        $pageController->more();
-        break;
-    case 'articles':
-        $articleController->index();
-        break;
-    case 'categories':
-        $articleController->categories();
-        break;
-    default:
-        // Динамические маршруты для статей по категориям
-        if (preg_match('#^articles/category/([a-zA-Z0-9\-_]+)$#', $path, $matches)) {
-            $category = $matches[1];
-            $articleController->index($category);
-        }
-        // Динамические маршруты для конкретных статей
-        elseif (preg_match('#^article/([a-zA-Z0-9\-_]+)$#', $path, $matches)) {
-            $slug = $matches[1];
-            $articleController->show($slug);
-        }
-        // Статические страницы
-        elseif (preg_match('#^page/(.+)$#', $path, $matches)) {
-            $pageController->show($matches[1]);
-        }
-        else {
-            $pageController->notFound();
-        }
-        break;
-}
+// send the response to the browser
+(new Laminas\HttpHandlerRunner\Emitter\SapiEmitter)->emit($response);

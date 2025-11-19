@@ -63,7 +63,7 @@
                     <span style="font-size: 1.5rem;">🏢</span>
                     <div>
                         <strong>Адрес</strong><br>
-                        <span style="color: #666;">г. Москва, ул. Примерная, 123</span>
+                        <span style="color: #666;">г. Владивосток, ул. ППК, 1337</span>
                     </div>
                 </div>
             </div>

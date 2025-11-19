@@ -14,7 +14,7 @@ class Page
         $this->meta = $meta;
     }
 
-    // Getters and setters
+
     public function getTitle() {
         return $this->title;
     }

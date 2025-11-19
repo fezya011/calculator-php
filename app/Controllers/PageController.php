@@ -3,104 +3,130 @@ namespace App\Controllers;
 
 use App\Core\ContentParser;
 use App\Views\PageView;
+use Laminas\Diactoros\Response;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 class PageController
 {
-    public $parser;
-    public $page_view;
+    private ContentParser $parser;
+    private PageView $page_view;
 
-    public function __construct()
+    public function __construct(ContentParser $parser, PageView $page_view)
     {
-        $this->parser = new ContentParser();
-        $this->page_view = new PageView();
+        $this->parser = $parser;
+        $this->page_view = $page_view;
     }
 
-    public function home()
+    public function responseWrapper(string $str): ResponseInterface
+    {
+        $response = new Response();
+        $response->getBody()->write($str);
+        return $response;
+    }
+
+    public function index(ServerRequestInterface $request): ResponseInterface
+    {
+        return $this->home($request);
+    }
+
+    public function home(ServerRequestInterface $request): ResponseInterface
     {
         $articles = $this->parser->getArticles(3);
         $page = $this->parser->getPage('home');
 
-        $this->page_view->render('home', [
-            'title' => $page['title'] ?? 'Главная страница',
-            'content' => $page['content'] ?? '',
-            'articles' => $articles
-        ]);
+        $html = $this->page_view->home($articles, $page);
+        return $this->responseWrapper($html);
     }
 
-    public function contact()
+    public function contact(ServerRequestInterface $request): ResponseInterface
     {
         $page = $this->parser->getPage('contact');
-        $this->page_view->render('contact', [
-            'title' => $page['title'] ?? 'Контакты',
-            'content' => $page['content'] ?? ''
-        ]);
+        $html = $this->page_view->contact($page);
+        return $this->responseWrapper($html);
     }
 
-    public function about()
+    public function about(ServerRequestInterface $request): ResponseInterface
     {
         $page = $this->parser->getPage('about');
-        $this->page_view->render('about', [
-            'title' => $page['title'] ?? 'О нас',
-            'content' => $page['content'] ?? ''
-        ]);
+        $html = $this->page_view->about($page);
+        return $this->responseWrapper($html);
     }
 
-    public function calculator()
+    public function calculator(ServerRequestInterface $request): ResponseInterface
     {
         $page = $this->parser->getPage('calculator');
-        $this->page_view->render('calculator', [
-            'title' => $page['title'] ?? 'Калькулятор',
-            'content' => $page['content'] ?? ''
-        ]);
+        $html = $this->page_view->calculator($page);
+        return $this->responseWrapper($html);
     }
 
-    public function more()
+    public function more(ServerRequestInterface $request): ResponseInterface
     {
         $page = $this->parser->getPage('more');
-        $this->page_view->render('more', [
-            'title' => $page['title'] ?? 'Дополнительно',
-            'content' => $page['content'] ?? ''
-        ]);
+        $html = $this->page_view->more($page);
+        return $this->responseWrapper($html);
     }
 
-    public function articles() {
-        $category = $_GET['category'] ?? null;
+    public function articles(ServerRequestInterface $request): ResponseInterface
+    {
+        $queryParams = $request->getQueryParams();
+        $category = $queryParams['category'] ?? null;
 
         if ($category) {
-            // Статьи по категории
             $articles = $this->parser->getArticlesByCategory($category);
             $categoryInfo = $this->parser->getCategoryInfo($category);
-            $title = $categoryInfo['icon'] . " " . $category;
         } else {
-            // Все статьи
             $articles = $this->parser->getArticles();
-            $title = "📚 Все статьи";
+            $categoryInfo = null;
         }
 
         $categories = $this->parser->getCategories();
 
-        $this->page_view->render('articles', [
-            'title' => $title,
-            'content' => '',
-            'articles' => $articles,
-            'categories' => $categories,
-            'current_category' => $category,
-            'category_info' => $categoryInfo ?? null
-        ]);
+        $html = $this->page_view->articles($articles, $categories, $category, $categoryInfo);
+        return $this->responseWrapper($html);
     }
 
-    public function categories()
+    public function showArticle(ServerRequestInterface $request, array $args): ResponseInterface
+    {
+        $slug = $args['slug'] ?? '';
+        $article = $this->parser->getArticle($slug);
+
+        if (!$article) {
+            return $this->notFound($request);
+        }
+
+        $html = $this->page_view->article($article);
+        return $this->responseWrapper($html);
+    }
+
+    public function showCategories(ServerRequestInterface $request): ResponseInterface
     {
         $categories = $this->parser->getCategories();
-
-        $this->page_view->render('categories', [
-            'title' => 'Категории статей',
-            'content' => '',
-            'categories' => $categories
-        ]);
+        $html = $this->page_view->categories($categories);
+        return $this->responseWrapper($html);
     }
 
-    public function notFound() {
-        $this->page_view->show404();
+    public function showPage(ServerRequestInterface $request, array $args): ResponseInterface
+    {
+        $pageName = $args['name'] ?? '';
+        $page = $this->parser->getPage($pageName);
+
+        if (!$page) {
+            return $this->notFound($request);
+        }
+
+        // Используем общий метод render для статических страниц
+        $html = $this->page_view->render($pageName, [
+            'title' => $page['title'] ?? ucfirst($pageName),
+            'content' => $page['content'] ?? ''
+        ]);
+        return $this->responseWrapper($html);
+    }
+
+    public function notFound(ServerRequestInterface $request): ResponseInterface
+    {
+        $html = $this->page_view->show404();
+        $response = $this->responseWrapper($html);
+        return $response->withStatus(404);
     }
 }

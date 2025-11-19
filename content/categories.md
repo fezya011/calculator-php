@@ -1,4 +1,6 @@
 ---
+
+---
 # Список категорий
 # format: name|description|color|icon
 
