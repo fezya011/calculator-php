@@ -1,16 +1,9 @@
-<?php
-$articles = $articles ?? [];
-$title = $title ?? 'Главная страница';
-$content = $content ?? '';
-$helper = new \App\Core\Helper();
-?>
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $helper::sanitize($title) ?></title>
+    <title>{{ title ?? 'FlatCMS' }}</title>
     <style>
         * {
             margin: 0;
@@ -315,49 +308,49 @@ $helper = new \App\Core\Helper();
     </div>
 
     <!-- Контент страницы -->
-    <?php if (!empty($content)): ?>
+    {% if content %}
         <div class="page-content">
-            <?= $content ?>
+            {{ content|raw }}
         </div>
-    <?php endif; ?>
+    {% endif %}
 
     <!-- Последние статьи -->
     <h2 class="section-title">🔥 Последние статьи</h2>
 
-    <?php if (!empty($articles)): ?>
+    {% if articles %}
         <div class="articles-grid">
-            <?php foreach ($articles as $article): ?>
+            {% for article in articles %}
                 <article class="article-card">
                     <div class="article-header">
                         <div>
                             <h3 class="article-title">
-                                <a href="/article/<?= $helper::sanitize($article['slug']) ?>">
-                                    <?= $helper::sanitize($article['title']) ?>
+                                <a href="/article/{{ article.slug|e }}">
+                                    {{ article.title|e }}
                                 </a>
                             </h3>
                         </div>
-                        <?php if (isset($article['meta']['category']) && $article['meta']['category']): ?>
-                            <div class="article-category" style="background: <?= $helper::sanitize($article['category_info']['color'] ?? '#667eea') ?>;">
-                                <?= $helper::sanitize($article['category_info']['icon'] ?? '📁') ?> <?= $helper::sanitize($article['meta']['category']) ?>
+                        {% if article.meta.category and article.meta.category %}
+                            <div class="article-category" style="background: {{ (article.category_info.color ?? '#667eea')|e }};">
+                                {{ (article.category_info.icon ?? '📁')|e }} {{ article.meta.category|e }}
                             </div>
-                        <?php endif; ?>
+                        {% endif %}
                     </div>
 
                     <div class="article-meta">
-                        <span class="meta-item">👤 <?= $helper::sanitize($article['meta']['author'] ?? 'Автор') ?></span>
-                        <span class="meta-item">📅 <?= $helper::formatDate($article['meta']['date'] ?? '', 'd.m.Y') ?></span>
+                        <span class="meta-item">👤 {{ (article.meta.author ?? 'Автор')|e }}</span>
+                        <span class="meta-item">📅 {{ article.meta.date ? article.meta.date|date('d.m.Y') : 'Дата не указана' }}</span>
                         <span class="meta-item">⏱️ ~5 мин</span>
                     </div>
 
                     <p class="article-excerpt">
-                        <?= $helper::sanitize($article['excerpt'] ?? 'Описание статьи отсутствует') ?>
+                        {{ (article.excerpt ?? 'Описание статьи отсутствует')|e }}
                     </p>
 
-                    <a href="/article/<?= $helper::sanitize($article['slug']) ?>" class="read-more">
+                    <a href="/article/{{ article.slug|e }}" class="read-more">
                         Читать далее →
                     </a>
                 </article>
-            <?php endforeach; ?>
+            {% endfor %}
         </div>
 
         <div style="text-align: center;">
@@ -365,14 +358,14 @@ $helper = new \App\Core\Helper();
                 📚 Все статьи
             </a>
         </div>
-    <?php else: ?>
+    {% else %}
         <div class="empty-state">
             <div class="empty-icon">📭</div>
             <h3>Статьи пока не добавлены</h3>
             <p>Администратор еще не опубликовал ни одной статьи.</p>
             <a href="/articles" class="read-more" style="margin-top: 1rem;">Обновить</a>
         </div>
-    <?php endif; ?>
+    {% endif %}
 
     <!-- Особенности -->
     <h2 class="section-title">✨ Возможности</h2>
