@@ -1,0 +1,93 @@
+{% extends "layout.twig" %}
+
+{% block styles %}
+    <link href="/assets/css/article.css" rel="stylesheet">
+{% endblock %}
+
+{% block page_header_and_breadcrumbs %}
+    <!-- Хлебные крошки будут автоматически через layout -->
+{% endblock %}
+
+{% block content %}
+    <div class="article-page">
+        <div class="container">
+            <a href="{% if article.meta.category %}/articles?category={{ article.meta.category|url_encode }}{% else %}/articles{% endif %}" class="back-link">
+                <i class="fi-rr-arrow-left"></i>
+                Назад к статьям
+            </a>
+
+            {% if article and article.title %}
+                <article class="article-content">
+                    <!-- Категория статьи -->
+                    {% if article.meta.category %}
+                        <div class="article-category" style="background: {{ (article.category_info.color ?? '#667eea')|e }};">
+                            {{ (article.category_info.icon ?? '📁')|e }} {{ article.meta.category|e }}
+                        </div>
+                    {% endif %}
+
+                    <header class="article-header">
+                        <h1 class="article-title">{{ article.title|e }}</h1>
+
+                        <div class="article-meta">
+                            <span class="meta-item">
+                                <i class="fi-rr-user"></i>
+                                {{ (article.meta.author ?? 'Автор')|e }}
+                            </span>
+                            <span class="meta-item">
+                                <i class="fi-rr-calendar"></i>
+                                {{ article.meta.date ? article.meta.date|date('d.m.Y в H:i') : 'Дата не указана' }}
+                            </span>
+                            {% if article.meta.category %}
+                                <span class="meta-item">
+                                    <i class="fi-rr-folder"></i>
+                                    <a href="/articles?category={{ article.meta.category|url_encode }}" class="category-link">
+                                        {{ article.meta.category|e }}
+                                    </a>
+                                </span>
+                            {% endif %}
+                            <span class="meta-item" id="reading-time">
+                                <i class="fi-rr-time"></i>
+                                Время чтения: ~5 мин
+                            </span>
+                        </div>
+                    </header>
+
+                    <div class="article-body">
+                        {{ article.content ?? 'Контент статьи отсутствует'|raw }}
+                    </div>
+
+
+                </article>
+            {% else %}
+                <div class="not-found">
+                    <div class="not-found-icon">😔</div>
+                    <h3>Статья не найдена</h3>
+                    <p>Запрошенная статья не существует или была удалена.</p>
+                    <a href="/articles" class="not-found-link">
+                        <i class="fi-rr-books"></i>
+                        Вернуться к статьям
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block java_script %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const articleBody = document.querySelector('.article-body');
+            if (articleBody) {
+                const text = articleBody.textContent || articleBody.innerText;
+                const words = text.trim().split(/\s+/).filter(word => word.length > 0);
+                const wordCount = words.length;
+                const readingTime = Math.max(1, Math.ceil(wordCount / 200));
+
+                const timeElement = document.getElementById('reading-time');
+                if (timeElement && readingTime > 0) {
+                    timeElement.innerHTML = `<i class="fi-rr-time"></i> Время чтения: ~${readingTime} мин`;
+                }
+            }
+        });
+    </script>
+{% endblock %}

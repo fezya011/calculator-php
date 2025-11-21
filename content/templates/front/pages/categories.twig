@@ -1,0 +1,58 @@
+{% extends "layout.twig" %}
+
+{% block styles %}
+    <link href="/assets/css/categories.css" rel="stylesheet">
+{% endblock %}
+
+{% block page_header_and_breadcrumbs %}
+    <!-- Хлебные крошки будут автоматически через layout -->
+{% endblock %}
+
+{% block content %}
+    <div class="categories-page">
+        <div class="container">
+            <h1 class="categories-title">📁 Категории статей</h1>
+
+            <div class="categories-container">
+                {% if categories %}
+                    <div class="categories-grid">
+                        {% for category in categories %}
+                            {% if category.articles_count > 0 %}
+                                <a href="/articles?category={{ category.name|url_encode }}"
+                                   class="category-card"
+                                   style="background: {{ category.color }};">
+
+                                    <div class="category-header">
+                                        <span class="category-icon">{{ category.icon }}</span>
+                                        <div class="category-info">
+                                            <h3>{{ category.name }}</h3>
+                                            <p>{{ category.description }}</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="category-footer">
+                                        <span class="category-count">
+                                            {{ category.articles_count }}
+                                            {% if category.articles_count == 1 %}статья
+                                            {% elseif category.articles_count >= 2 and category.articles_count <= 4 %}статьи
+                                            {% else %}статей
+                                            {% endif %}
+                                        </span>
+                                        <span class="category-arrow">→</span>
+                                    </div>
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-categories">
+                        <div class="empty-icon">📭</div>
+                        <h3>Категории не найдены</h3>
+                        <p>Добавьте файл <code>content/categories.md</code> с описанием категорий</p>
+                        <a href="/" class="btn btn-primary">На главную</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

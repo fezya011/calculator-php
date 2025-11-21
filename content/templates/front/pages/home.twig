@@ -1,0 +1,130 @@
+{% extends "layout.twig" %}
+
+{% block styles %}
+    <link href="/assets/css/home.css" rel="stylesheet">
+{% endblock %}
+
+
+
+{% block content %}
+    <!-- Контент страницы -->
+    {% if content %}
+        <div class="page-content mb-40">
+            {{ content|raw }}
+        </div>
+    {% endif %}
+
+    <!-- Последние статьи -->
+    <div class="section-articles mb-50">
+        <h2 class="section-title">
+            <i class="fi-rr-flame me-2"></i>Последние статьи
+        </h2>
+
+        {% if articles %}
+            <div class="articles-grid">
+                {% for article in articles %}
+                    <article class="article-card">
+                        <div class="article-header">
+                            <div class="article-title">
+                                <h3 class="h4 mb-0">
+                                    <a href="/article/{{ article.slug|e }}">
+                                        {{ article.title|e }}
+                                    </a>
+                                </h3>
+                            </div>
+                            {% if article.meta.category %}
+                                <div class="article-category" style="background: {{ (article.category_info.color ?? '#667eea')|e }}; color: white;">
+                                    {{ (article.category_info.icon ?? '📁')|e }} {{ article.meta.category|e }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="article-meta">
+                            <span class="meta-item">
+                                <i class="fi-rr-user me-1"></i>{{ (article.meta.author ?? 'Автор')|e }}
+                            </span>
+                            <span class="meta-item">
+                                <i class="fi-rr-calendar me-1"></i>{{ article.meta.date ? article.meta.date|date('d.m.Y') : 'Не указана' }}
+                            </span>
+                            <span class="meta-item reading-time">
+                                <i class="fi-rr-time me-1"></i>~5 мин
+                            </span>
+                        </div>
+
+                        <p class="article-excerpt">
+                            {{ (article.excerpt ?? 'Описание статьи отсутствует')|e }}
+                        </p>
+
+                        <a href="/article/{{ article.slug|e }}" class="btn btn-primary btn-sm">
+                            Читать далее
+                        </a>
+                    </article>
+                {% endfor %}
+            </div>
+
+            <div class="text-center mt-30">
+                <a href="/articles" class="btn btn-primary">
+                    <i class="fi-rr-books me-2"></i>Все статьи
+                </a>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📭</div>
+                <h3 class="h4 mb-10">Статьи пока не добавлены</h3>
+                <p class="mb-20">Администратор еще не опубликовал ни одной статьи.</p>
+                <a href="/articles" class="btn btn-outline-primary">Обновить</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Особенности -->
+    <div class="section-features">
+        <h2 class="section-title">
+            <i class="fi-rr-star me-2"></i>Возможности
+        </h2>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📝</div>
+                <h3 class="feature-title">Простое редактирование</h3>
+                <p class="feature-description">
+                    Создавайте и редактируйте статьи в формате Markdown с удобным редактором
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📂</div>
+                <h3 class="feature-title">Категории</h3>
+                <p class="feature-description">
+                    Организуйте статьи по категориям для удобной навигации
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3 class="feature-title">Быстрая работа</h3>
+                <p class="feature-description">
+                    Оптимизированная система без лишних зависимостей
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block java_script %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.article-card').forEach(card => {
+                const excerpt = card.querySelector('.article-excerpt');
+                if (excerpt) {
+                    const text = excerpt.textContent || excerpt.innerText;
+                    const wordCount = text.trim().split(/\s+/).length;
+                    const readingTime = Math.max(1, Math.ceil(wordCount / 200));
+
+                    const timeElement = card.querySelector('.reading-time');
+                    if (timeElement) {
+                        timeElement.innerHTML = `<i class="fi-rr-time me-1"></i>~${readingTime} мин`;
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}

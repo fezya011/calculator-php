@@ -1,0 +1,50 @@
+<div class="sidebar-widget">
+    <!-- Категории -->
+    <div class="widget-categories mb-30">
+        <h5 class="widget-title style-1">📁 Категории</h5>
+        <div class="categories-list">
+            {% set current_category = app.request.query.get('category') ?? '' %}
+
+            <a href="/articles" class="category-item {% if current_category == '' %}active{% endif %}">
+                <span class="category-icon">📚</span>
+                <span class="category-name">Все статьи</span>
+                <span class="category-count">{{ all_articles_count ?? 0 }}</span>
+            </a>
+
+            {% for category in categories %}
+                {% if category.articles_count > 0 %}
+                    <a href="/articles?category={{ category.name|url_encode }}"
+                       class="category-item {% if current_category == category.name %}active{% endif %}"
+                       style="{% if current_category == category.name %}background-color: {{ category.color }}; border-color: {{ category.color }}; color: white;{% endif %}"
+                       title="{{ category.description }}">
+                        <span class="category-icon">{{ category.icon }}</span>
+                        <span class="category-name">{{ category.name }}</span>
+                        <span class="category-count">{{ category.articles_count }}</span>
+                    </a>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Последние статьи -->
+    <div class="widget-popular-posts">
+        <h5 class="widget-title style-1">🔥 Последние</h5>
+        <div class="post-list">
+            {% for article in recent_articles %}
+                <a href="/article/{{ article.slug }}" class="post-item">
+                    <div class="post-content">
+                        <h6 class="post-title">{{ article.title|slice(0, 25) }}{% if article.title|length > 25 %}...{% endif %}</h6>
+                        <div class="post-meta">
+                            <span class="post-category">
+                                {{ (article.meta.category ?? 'Общее')|slice(0, 12) }}{% if (article.meta.category ?? '')|length > 12 %}...{% endif %}
+                            </span>
+                            <span class="post-date">
+                                {{ article.meta.date ? article.meta.date|date('d.m.Y') : '' }}
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>

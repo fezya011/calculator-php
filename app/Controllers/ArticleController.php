@@ -2,7 +2,7 @@
 namespace App\Controllers;
 
 use App\Core\ContentParser;
-use App\Views\PageView;
+use App\Views\FrontView;
 
 class ArticleController
 {
@@ -12,7 +12,7 @@ class ArticleController
     public function __construct()
     {
         $this->parser = new ContentParser();
-        $this->page_view = new PageView();
+        $this->page_view = new FrontView();
     }
 
     // Обновляем метод index для поддержки категорий через URL

@@ -1,0 +1,66 @@
+{% extends "layout.twig" %}
+
+{% block styles %}
+    <link href="/assets/css/articles.css" rel="stylesheet">
+{% endblock %}
+
+{% block page_header_and_breadcrumbs %}
+    <div class="text-center mb-40">
+        <h1 class="page-title">📚 Все статьи</h1>
+        {% if current_category %}
+            <p class="text-gray-600">Категория: {{ current_category }}</p>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="articles-page">
+        <div class="container">
+            <div class="articles-list">
+                {% if articles %}
+                    {% for article in articles %}
+                        <div class="article-item">
+                            <h2 class="article-title">
+                                <a href="/article/{{ article.slug|e }}">
+                                    {{ article.title|e }}
+                                </a>
+                            </h2>
+
+                            <div class="article-meta">
+                                <span class="meta-item">
+                                    <i class="fi-rr-user"></i>
+                                    {{ article.meta.author|default('Автор')|e }}
+                                </span>
+                                <span class="meta-item">
+                                    <i class="fi-rr-calendar"></i>
+                                    {{ article.meta.date ? article.meta.date|date('d.m.Y') : 'Дата не указана' }}
+                                </span>
+                                {% if article.meta.category %}
+                                    <span class="meta-item">
+                                        <i class="fi-rr-folder"></i>
+                                        {{ article.meta.category|e }}
+                                    </span>
+                                {% endif %}
+                            </div>
+
+                            <p class="article-excerpt">
+                                {{ (article.excerpt ?? article.content|striptags|slice(0, 200))|e }}{% if article.content|length > 200 %}...{% endif %}
+                            </p>
+
+                            <a href="/article/{{ article.slug|e }}" class="read-more">
+                                Читать статью
+                            </a>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon">🔍</div>
+                        <h2>Статьи не найдены</h2>
+                        <p>Попробуйте зайти позже, когда статьи будут добавлены.</p>
+                        <a href="/" class="btn btn-primary">На главную</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

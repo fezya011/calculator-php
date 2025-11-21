@@ -198,11 +198,20 @@ class ContentParser
         return $this->getArticles(null, $category);
     }
 
-    public function getArticlesCountByCategory($category)
+    public function getCategoriesWithCounts(): array
     {
-        $articles = $this->getArticlesByCategory($category);
-        return count($articles);
+        $categories = $this->getCategories();
+        $allArticles = $this->getArticles();
+
+        foreach ($categories as &$category) {
+            $category['articles_count'] = count(array_filter($allArticles, function($article) use ($category) {
+                return ($article['meta']['category'] ?? '') === $category['name'];
+            }));
+        }
+
+        return $categories;
     }
+
 
     private function getRandomColor()
     {

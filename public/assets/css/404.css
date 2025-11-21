@@ -1,0 +1,264 @@
+/* Error Page Styles - Clean Version */
+.error-page {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    padding: 2rem 0;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+.error-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.error-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.error-icon {
+    font-size: 8rem;
+    margin-bottom: 1.5rem;
+    display: block;
+    opacity: 0.8;
+}
+
+.error-title {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #1a202c;
+    margin-bottom: 1rem;
+    line-height: 1.1;
+}
+
+.error-subtitle {
+    font-size: 1.25rem;
+    color: #718096;
+    line-height: 1.6;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* Info Cards */
+.error-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.info-card {
+    background: white;
+    padding: 2rem 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.info-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.info-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+    color: #667eea;
+}
+
+.info-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+}
+
+.info-description {
+    font-size: 0.875rem;
+    color: #718096;
+    line-height: 1.5;
+}
+
+/* Action Buttons */
+.error-actions {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    border: 2px solid transparent;
+}
+
+.btn-primary {
+    background: #667eea;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #5a67d8;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-outline {
+    background: transparent;
+    color: #667eea;
+    border-color: #667eea;
+}
+
+.btn-outline:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+}
+
+/* Quick Links */
+.quick-links {
+    text-align: center;
+}
+
+.quick-links-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #4a5568;
+    margin-bottom: 1rem;
+}
+
+.quick-links-grid {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.quick-link {
+    padding: 0.75rem 1.5rem;
+    background: white;
+    color: #4a5568;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+}
+
+.quick-link:hover {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+    transform: translateY(-1px);
+}
+
+/* Hide sidebar on error pages */
+.error-page .sidebar {
+    display: none !important;
+}
+
+.error-page .col-lg-8 {
+    width: 100% !important;
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+}
+
+/* Animations */
+.fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .error-page {
+        padding: 1rem 0;
+        min-height: 70vh;
+    }
+
+    .error-icon {
+        font-size: 6rem;
+    }
+
+    .error-title {
+        font-size: 2.5rem;
+    }
+
+    .error-subtitle {
+        font-size: 1.125rem;
+        padding: 0 1rem;
+    }
+
+    .error-info-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding: 0 1rem;
+    }
+
+    .info-card {
+        padding: 1.5rem 1rem;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        align-items: center;
+        padding: 0 1rem;
+    }
+
+    .action-btn {
+        width: 100%;
+        max-width: 280px;
+        justify-content: center;
+    }
+
+    .quick-links-grid {
+        padding: 0 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .error-icon {
+        font-size: 5rem;
+    }
+
+    .error-title {
+        font-size: 2rem;
+    }
+
+    .error-subtitle {
+        font-size: 1rem;
+    }
+
+    .quick-link {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+    }
+}

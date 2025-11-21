@@ -1,0 +1,59 @@
+{% extends "layout.twig" %}
+
+{% block styles %}
+<link href="/assets/css/about.css" rel="stylesheet">
+{% endblock %}
+
+{% block page_header_and_breadcrumbs %}
+<!-- Хлебные крошки будут автоматически через layout -->
+{% endblock %}
+
+{% block content %}
+<div class="about-page">
+    <div class="container">
+        <div class="about-container">
+            <h1 class="about-title">👋 О нас</h1>
+
+            <div class="about-hero">
+                <div class="about-mission">
+                    <h2>Наша миссия</h2>
+                    <p>
+                        Мы создаем простые и эффективные решения для управления контентом,
+                        которые не требуют сложных настроек и баз данных.
+                    </p>
+                    <p>
+                        FlatCMS - это идеальное решение для небольших сайтов, блогов и
+                        лендингов, где важны простота и скорость.
+                    </p>
+                </div>
+
+                <div class="about-feature-card">
+                    <div class="about-feature-icon">🚀</div>
+                    <h3>Быстро и просто</h3>
+                    <p>Установка за 5 минут</p>
+                </div>
+            </div>
+
+            <div class="about-features-grid">
+                <div class="about-feature-item">
+                    <div class="about-feature-icon-small">⚡</div>
+                    <h3>Быстрая</h3>
+                    <p>Работает без базы данных</p>
+                </div>
+
+                <div class="about-feature-item">
+                    <div class="about-feature-icon-small">🔒</div>
+                    <h3>Безопасная</h3>
+                    <p>Минимальная поверхность атаки</p>
+                </div>
+
+                <div class="about-feature-item">
+                    <div class="about-feature-icon-small">📁</div>
+                    <h3>Простая</h3>
+                    <p>Легкость резервного копирования</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

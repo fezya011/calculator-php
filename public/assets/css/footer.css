@@ -1,0 +1,73 @@
+/* Footer Styles - Sidebar Style */
+.footer {
+    background: white;
+    border-top: 1px solid #f1f5f9;
+    margin-top: 3rem;
+}
+
+.footer-logo h4 {
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.footer-logo p {
+    color: #64748b;
+    font-size: 1rem;
+}
+
+.menu-footer {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.menu-footer li a {
+    color: #475569;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+}
+
+.menu-footer li a:hover {
+    color: #667eea;
+    background: #f8fafc;
+}
+
+.footer-copyright {
+    border-top: 1px solid #f1f5f9;
+    padding-top: 1.5rem;
+}
+
+.footer-copyright p {
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .footer {
+        padding: 2rem 0 !important;
+    }
+
+    .menu-footer {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .menu-footer li a {
+        display: block;
+        text-align: center;
+        padding: 0.75rem 1rem;
+        background: #f8fafc;
+        border-radius: 8px;
+    }
+
+    .footer-logo h4 {
+        font-size: 1.25rem;
+    }
+}

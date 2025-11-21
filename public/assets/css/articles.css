@@ -1,0 +1,159 @@
+/* Articles Page Styles */
+.articles-page {
+    min-height: 80vh;
+    padding: 2rem 0;
+}
+
+.page-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.articles-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.article-item {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.2s ease;
+    border-left: 4px solid #667eea;
+}
+
+.article-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+    border-color: #667eea;
+}
+
+.article-title {
+    margin-bottom: 1rem;
+}
+
+.article-title a {
+    color: #1e293b;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.25rem;
+    transition: color 0.2s ease;
+}
+
+.article-title a:hover {
+    color: #667eea;
+}
+
+.article-meta {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+    color: #64748b;
+    font-size: 0.9rem;
+    flex-wrap: wrap;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.article-excerpt {
+    color: #475569;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.read-more {
+    display: inline-block;
+    background: #667eea;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    border: 1px solid #667eea;
+    transition: all 0.2s ease;
+}
+
+.read-more:hover {
+    background: #5a67d8;
+    border-color: #5a67d8;
+    transform: translateY(-1px);
+}
+
+.empty-state {
+    background: white;
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    text-align: center;
+    border: 1px solid #f1f5f9;
+}
+
+.empty-icon {
+    font-size: 3rem;
+    color: #cbd5e1;
+    margin-bottom: 1rem;
+}
+
+.empty-state h2 {
+    color: #1e293b;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.empty-state p {
+    color: #64748b;
+    margin-bottom: 1.5rem;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .articles-page {
+        padding: 1rem 0;
+    }
+
+    .page-title {
+        font-size: 1.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .article-item {
+        padding: 1.5rem;
+    }
+
+    .article-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .article-title a {
+        font-size: 1.1rem;
+    }
+
+    .empty-state {
+        padding: 2rem 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .article-item {
+        padding: 1.25rem;
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+    }
+
+    .read-more {
+        width: 100%;
+        text-align: center;
+    }
+}

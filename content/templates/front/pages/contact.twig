@@ -1,0 +1,98 @@
+{% extends "layout.twig" %}
+
+{% block styles %}
+<link href="/assets/css/contact.css" rel="stylesheet">
+{% endblock %}
+
+{% block page_header_and_breadcrumbs %}
+<!-- Хлебные крошки будут автоматически через layout -->
+{% endblock %}
+
+{% block content %}
+<div class="contact-page">
+    <div class="container">
+        <h1 class="contact-title">📞 Контакты</h1>
+
+        <div class="contact-container">
+            <div class="contact-grid">
+                <!-- Контактная информация -->
+                <div class="contact-section">
+                    <h2>Свяжитесь с нами</h2>
+
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <span class="contact-icon">📧</span>
+                            <div class="contact-details">
+                                <strong>Email</strong>
+                                <span>info@flatcms.com</span>
+                            </div>
+                        </div>
+
+                        <div class="contact-item">
+                            <span class="contact-icon">📱</span>
+                            <div class="contact-details">
+                                <strong>Телефон</strong>
+                                <span>+7 (999) 123-45-67</span>
+                            </div>
+                        </div>
+
+                        <div class="contact-item">
+                            <span class="contact-icon">🏢</span>
+                            <div class="contact-details">
+                                <strong>Адрес</strong>
+                                <span>г. Владивосток, ул. ППК, 1337</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Форма обратной связи -->
+                <div class="contact-section">
+                    <h2>Форма обратной связи</h2>
+
+                    <form class="contact-form" id="contactForm">
+                        <div class="form-group">
+                            <label class="form-label">Ваше имя</label>
+                            <input type="text" class="form-input" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-input" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Сообщение</label>
+                            <textarea class="form-textarea" required></textarea>
+                        </div>
+
+                        <button type="submit" class="submit-btn">
+                            Отправить сообщение
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block java_script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const contactForm = document.getElementById('contactForm');
+
+        if (contactForm) {
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                // Здесь можно добавить отправку формы
+                alert('Сообщение отправлено! В реальном приложении здесь будет отправка на сервер.');
+
+                // Очистка формы
+                contactForm.reset();
+            });
+        }
+    });
+</script>
+{% endblock %}

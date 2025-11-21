@@ -1,0 +1,23 @@
+{% extends "layout.twig" %}
+
+{% block styles %}
+    <link href="/assets/css/error.css" rel="stylesheet">
+{% endblock %}
+
+{% block page_header_and_breadcrumbs %}
+    <div class="text-center mb-50">
+        <div class="error-icon display-1 text-muted mb-30">😕</div>
+        <h1 class="display-4 fw-bold text-gray-900 mb-20">404 - Страница не найдена</h1>
+        <p class="lead text-gray-600 mb-30">
+            Извините, но страница которую вы ищете не существует или была перемещена.
+        </p>
+    </div>
+{% endblock %}
+
+{% block sidebar %}
+    {# Полностью переопределяем блок сайдбара - оставляем пустым #}
+{% endblock %}
+
+{% block java_script %}
+    <script src="/assets/js/error.js"></script>
+{% endblock %}

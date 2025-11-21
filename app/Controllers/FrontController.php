@@ -2,20 +2,20 @@
 namespace App\Controllers;
 
 use App\Core\ContentParser;
-use App\Views\PageView;
+use App\Views\FrontView;
 use Laminas\Diactoros\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class PageController
+class FrontController
 {
     private ContentParser $parser;
-    private PageView $page_view;
+    private FrontView $front_view;
 
-    public function __construct(ContentParser $parser, PageView $page_view)
+    public function __construct(ContentParser $parser, FrontView $front_view)
     {
         $this->parser = $parser;
-        $this->page_view = $page_view;
+        $this->front_view = $front_view;
     }
 
     public function responseWrapper(string $str): ResponseInterface
@@ -34,36 +34,50 @@ class PageController
     {
         $articles = $this->parser->getArticles(3);
         $page = $this->parser->getPage('home');
+        $categories = $this->parser->getCategoriesWithCounts();
+        $recentArticles = $this->parser->getArticles(3);
 
-        $html = $this->page_view->home($articles, $page);
+        $html = $this->front_view->home($articles, $page, $categories, $recentArticles);
         return $this->responseWrapper($html);
     }
 
     public function contact(ServerRequestInterface $request): ResponseInterface
     {
         $page = $this->parser->getPage('contact');
-        $html = $this->page_view->contact($page);
+        $categories = $this->parser->getCategoriesWithCounts();
+        $recentArticles = $this->parser->getArticles(3);
+
+        $html = $this->front_view->contact($page, $categories, $recentArticles);
         return $this->responseWrapper($html);
     }
 
     public function about(ServerRequestInterface $request): ResponseInterface
     {
         $page = $this->parser->getPage('about');
-        $html = $this->page_view->about($page);
+        $categories = $this->parser->getCategoriesWithCounts();
+        $recentArticles = $this->parser->getArticles(3);
+
+        $html = $this->front_view->about($page, $categories, $recentArticles);
         return $this->responseWrapper($html);
     }
 
     public function calculator(ServerRequestInterface $request): ResponseInterface
     {
         $page = $this->parser->getPage('calculator');
-        $html = $this->page_view->calculator($page);
+        $categories = $this->parser->getCategoriesWithCounts();
+        $recentArticles = $this->parser->getArticles(3);
+
+        $html = $this->front_view->calculator($page, $categories, $recentArticles);
         return $this->responseWrapper($html);
     }
 
     public function more(ServerRequestInterface $request): ResponseInterface
     {
         $page = $this->parser->getPage('more');
-        $html = $this->page_view->more($page);
+        $categories = $this->parser->getCategoriesWithCounts();
+        $recentArticles = $this->parser->getArticles(3);
+
+        $html = $this->front_view->more($page, $categories, $recentArticles);
         return $this->responseWrapper($html);
     }
 
@@ -80,9 +94,10 @@ class PageController
             $categoryInfo = null;
         }
 
-        $categories = $this->parser->getCategories();
+        $categories = $this->parser->getCategoriesWithCounts();
+        $recentArticles = $this->parser->getArticles(3);
 
-        $html = $this->page_view->articles($articles, $categories, $category, $categoryInfo);
+        $html = $this->front_view->articles($articles, $categories, $category, $categoryInfo, $recentArticles);
         return $this->responseWrapper($html);
     }
 
@@ -95,14 +110,19 @@ class PageController
             return $this->notFound($request);
         }
 
-        $html = $this->page_view->article($article);
+        $categories = $this->parser->getCategoriesWithCounts();
+        $recentArticles = $this->parser->getArticles(3);
+
+        $html = $this->front_view->article($article, $categories, $recentArticles);
         return $this->responseWrapper($html);
     }
 
     public function showCategories(ServerRequestInterface $request): ResponseInterface
     {
-        $categories = $this->parser->getCategories();
-        $html = $this->page_view->categories($categories);
+        $categories = $this->parser->getCategoriesWithCounts();
+        $recentArticles = $this->parser->getArticles(3);
+
+        $html = $this->front_view->categories($categories, $recentArticles);
         return $this->responseWrapper($html);
     }
 
@@ -115,17 +135,25 @@ class PageController
             return $this->notFound($request);
         }
 
-        // Используем общий метод render для статических страниц
-        $html = $this->page_view->render($pageName, [
+        $categories = $this->parser->getCategoriesWithCounts();
+        $recentArticles = $this->parser->getArticles(3);
+
+        $html = $this->front_view->render($pageName, [
             'title' => $page['title'] ?? ucfirst($pageName),
-            'content' => $page['content'] ?? ''
+            'content' => $page['content'] ?? '',
+            'categories' => $categories,
+            'recent_articles' => $recentArticles,
+            'all_articles_count' => count($this->parser->getArticles())
         ]);
         return $this->responseWrapper($html);
     }
 
     public function notFound(ServerRequestInterface $request): ResponseInterface
     {
-        $html = $this->page_view->show404();
+        $categories = $this->parser->getCategoriesWithCounts();
+        $recentArticles = $this->parser->getArticles(3);
+
+        $html = $this->front_view->show404($categories, $recentArticles);
         $response = $this->responseWrapper($html);
         return $response->withStatus(404);
     }
