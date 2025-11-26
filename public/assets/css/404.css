@@ -1,4 +1,4 @@
-/* Error Page Styles - Clean Version */
+
 .error-page {
     min-height: 80vh;
     display: flex;
@@ -6,6 +6,8 @@
     padding: 2rem 0;
     background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 }
+
+
 
 .error-container {
     max-width: 800px;

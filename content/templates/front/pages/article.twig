@@ -47,7 +47,7 @@
                             {% endif %}
                             <span class="meta-item" id="reading-time">
                                 <i class="fi-rr-time"></i>
-                                Время чтения: ~5 мин
+                                Время чтения: ~{{ ((article.content|striptags|split(' ')|length) / 200)|round(0, 'ceil') }} мин
                             </span>
                         </div>
                     </header>
@@ -55,8 +55,6 @@
                     <div class="article-body">
                         {{ article.content ?? 'Контент статьи отсутствует'|raw }}
                     </div>
-
-
                 </article>
             {% else %}
                 <div class="not-found">
@@ -74,20 +72,5 @@
 {% endblock %}
 
 {% block java_script %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const articleBody = document.querySelector('.article-body');
-            if (articleBody) {
-                const text = articleBody.textContent || articleBody.innerText;
-                const words = text.trim().split(/\s+/).filter(word => word.length > 0);
-                const wordCount = words.length;
-                const readingTime = Math.max(1, Math.ceil(wordCount / 200));
-
-                const timeElement = document.getElementById('reading-time');
-                if (timeElement && readingTime > 0) {
-                    timeElement.innerHTML = `<i class="fi-rr-time"></i> Время чтения: ~${readingTime} мин`;
-                }
-            }
-        });
-    </script>
+    <script src="/assets/js/readTime.js"></script>
 {% endblock %}

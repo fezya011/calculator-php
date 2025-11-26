@@ -4,8 +4,6 @@
     <link href="/assets/css/home.css" rel="stylesheet">
 {% endblock %}
 
-
-
 {% block content %}
     <!-- Контент страницы -->
     {% if content %}
@@ -46,8 +44,9 @@
                             <span class="meta-item">
                                 <i class="fi-rr-calendar me-1"></i>{{ article.meta.date ? article.meta.date|date('d.m.Y') : 'Не указана' }}
                             </span>
-                            <span class="meta-item reading-time">
-                                <i class="fi-rr-time me-1"></i>~5 мин
+                            <span class="meta-item" id="reading-time">
+                                <i class="fi-rr-time"></i>
+                                Время чтения: ~{{ ((article.content|striptags|split(' ')|length) / 200)|round(0, 'ceil') }} мин
                             </span>
                         </div>
 
@@ -110,21 +109,5 @@
 {% endblock %}
 
 {% block java_script %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.article-card').forEach(card => {
-                const excerpt = card.querySelector('.article-excerpt');
-                if (excerpt) {
-                    const text = excerpt.textContent || excerpt.innerText;
-                    const wordCount = text.trim().split(/\s+/).length;
-                    const readingTime = Math.max(1, Math.ceil(wordCount / 200));
-
-                    const timeElement = card.querySelector('.reading-time');
-                    if (timeElement) {
-                        timeElement.innerHTML = `<i class="fi-rr-time me-1"></i>~${readingTime} мин`;
-                    }
-                }
-            });
-        });
-    </script>
+    <script src="/assets/js/readTime.js"></script>
 {% endblock %}

@@ -61,15 +61,6 @@ class FrontController
         return $this->responseWrapper($html);
     }
 
-    public function calculator(ServerRequestInterface $request): ResponseInterface
-    {
-        $page = $this->parser->getPage('calculator');
-        $categories = $this->parser->getCategoriesWithCounts();
-        $recentArticles = $this->parser->getArticles(3);
-
-        $html = $this->front_view->calculator($page, $categories, $recentArticles);
-        return $this->responseWrapper($html);
-    }
 
     public function more(ServerRequestInterface $request): ResponseInterface
     {

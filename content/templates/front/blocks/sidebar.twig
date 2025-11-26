@@ -8,7 +8,11 @@
             <a href="/articles" class="category-item {% if current_category == '' %}active{% endif %}">
                 <span class="category-icon">📚</span>
                 <span class="category-name">Все статьи</span>
-                <span class="category-count">{{ all_articles_count ?? 0 }}</span>
+                {% set articles_count = 0 %}
+                {% for article in articles %}
+                    {% set articles_count = articles_count + 1 %}
+                {% endfor %}
+                <span class="category-count">{{ articles_count ?? 0 }}</span>
             </a>
 
             {% for category in categories %}

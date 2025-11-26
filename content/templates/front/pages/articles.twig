@@ -1,66 +1,229 @@
 {% extends "layout.twig" %}
 
 {% block styles %}
-    <link href="/assets/css/articles.css" rel="stylesheet">
+    {#  <link href="/assets/css/articles.css" rel="stylesheet"> #}
+    <style>
+        /* Grid Layout */
+        .articles-band {
+            width: 90%;
+            max-width: 1240px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: auto;
+            grid-gap: 20px;
+        }
+
+        @media (min-width: 30em) {
+            .articles-band {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (min-width: 60em) {
+            .articles-band {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Card Styles */
+        .article-card {
+            background: white;
+            text-decoration: none;
+            color: #444;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
+            position: relative;
+            top: 0;
+            transition: all .1s ease-in;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .article-card:hover {
+            top: -2px;
+            box-shadow: 0 4px 5px rgba(0,0,0,0.2);
+            text-decoration: none;
+            color: #444;
+        }
+
+        .article-thumb {
+            padding-bottom: 60%;
+            background-size: cover;
+            background-position: center center;
+            background-color: #f5f7f8;
+        }
+
+        .article-content {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .article-card h2 {
+            font-size: 18px;
+            margin: 0 0 10px 0;
+            color: #333;
+            line-height: 1.3;
+        }
+
+        .article-card p {
+            flex: 1;
+            line-height: 1.4;
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .article-meta-grid {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #999;
+            margin-top: auto;
+        }
+
+        .article-author {
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+
+        .article-date {
+            color: #999;
+        }
+
+        /* Featured Article */
+        .featured-article {
+            grid-column: 1 / -1;
+        }
+
+        @media (min-width: 60em) {
+            .featured-article {
+                grid-column: 1 / span 2;
+            }
+
+            .featured-article h2 {
+                font-size: 22px;
+            }
+        }
+
+        /* Page Header */
+        .articles-header {
+            width: 90%;
+            max-width: 1240px;
+            margin: 0 auto 30px;
+            text-align: center;
+        }
+
+        .articles-header h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            color: #333;
+        }
+
+        .category-tag {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        /* Empty State */
+        .empty-articles {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-articles h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .empty-articles p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+    </style>
 {% endblock %}
 
 {% block page_header_and_breadcrumbs %}
-    <div class="text-center mb-40">
-        <h1 class="page-title">📚 Все статьи</h1>
+    <header class="articles-header">
+        <h1>📚 Все статьи</h1>
         {% if current_category %}
-            <p class="text-gray-600">Категория: {{ current_category }}</p>
+            <div class="category-tag">{{ current_category }}</div>
+        {% endif %}
+    </header>
+{% endblock %}
+
+{% block content %}
+    <div class="articles-band">
+        {% if articles %}
+            {% for article in articles %}
+                <div class="article-item {% if loop.first %}featured-article{% endif %}">
+                    <a href="/article/{{ article.slug|e }}" class="article-card">
+                        {% if article.meta.image %}
+                            <div class="article-thumb" style="background-image: url({{ article.meta.image|e }});"></div>
+                        {% else %}
+                            <div class="article-thumb" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                        {% endif %}
+
+                        <div class="article-content">
+                            <div>
+                                <h2>{{ article.meta.title|default(article.title)|e }}</h2>
+
+                                {% if article.excerpt or article.content %}
+                                    <p>
+                                        {{ article.excerpt|default(article.content|striptags|slice(0, 120) ~ '...')|e }}
+                                    </p>
+                                {% endif %}
+                            </div>
+
+                            <div class="article-meta-grid">
+                                <span class="article-author">
+                                    {{ article.meta.author|default('Автор')|e }}
+                                </span>
+                                <span class="article-date">
+                                    {{ article.meta.date ? article.meta.date|date('d.m.Y') : '' }}
+                                </span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-articles">
+                <div class="empty-icon">🔍</div>
+                <h2>Статьи не найдены</h2>
+                <p>Попробуйте зайти позже, когда статьи будут добавлены.</p>
+                <a href="/" class="btn btn-primary">На главную</a>
+            </div>
         {% endif %}
     </div>
 {% endblock %}
 
-{% block content %}
-    <div class="articles-page">
-        <div class="container">
-            <div class="articles-list">
-                {% if articles %}
-                    {% for article in articles %}
-                        <div class="article-item">
-                            <h2 class="article-title">
-                                <a href="/article/{{ article.slug|e }}">
-                                    {{ article.title|e }}
-                                </a>
-                            </h2>
+{% block sidebar %}
+    {# Полностью переопределяем блок сайдбара - оставляем пустым #}
+{% endblock %}
 
-                            <div class="article-meta">
-                                <span class="meta-item">
-                                    <i class="fi-rr-user"></i>
-                                    {{ article.meta.author|default('Автор')|e }}
-                                </span>
-                                <span class="meta-item">
-                                    <i class="fi-rr-calendar"></i>
-                                    {{ article.meta.date ? article.meta.date|date('d.m.Y') : 'Дата не указана' }}
-                                </span>
-                                {% if article.meta.category %}
-                                    <span class="meta-item">
-                                        <i class="fi-rr-folder"></i>
-                                        {{ article.meta.category|e }}
-                                    </span>
-                                {% endif %}
-                            </div>
-
-                            <p class="article-excerpt">
-                                {{ (article.excerpt ?? article.content|striptags|slice(0, 200))|e }}{% if article.content|length > 200 %}...{% endif %}
-                            </p>
-
-                            <a href="/article/{{ article.slug|e }}" class="read-more">
-                                Читать статью
-                            </a>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="empty-state">
-                        <div class="empty-icon">🔍</div>
-                        <h2>Статьи не найдены</h2>
-                        <p>Попробуйте зайти позже, когда статьи будут добавлены.</p>
-                        <a href="/" class="btn btn-primary">На главную</a>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
+{% block java_script %}
+    <script src="/assets/js/articles.js"></script>
 {% endblock %}

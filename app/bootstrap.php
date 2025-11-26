@@ -33,11 +33,6 @@ $container->add(FrontController::class)
         FrontView::class
     ]);
 
-$container->add(ArticleController::class)
-    ->addArguments([
-        ContentParser::class,
-        FrontView::class
-    ]);
 
 $strategy = (new ApplicationStrategy)->setContainer($container);
 $router = (new Router)->setStrategy($strategy);

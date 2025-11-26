@@ -2,11 +2,14 @@
 
 {% block styles %}
     <link href="/assets/css/error.css" rel="stylesheet">
+    <link href="/assets/css/pixelAnimation.css" rel="stylesheet">
 {% endblock %}
 
 {% block page_header_and_breadcrumbs %}
     <div class="text-center mb-50">
-        <div class="error-icon display-1 text-muted mb-30">😕</div>
+        <div class="pixel-animation-container">
+            <div class="pixel-animation"></div>
+        </div>
         <h1 class="display-4 fw-bold text-gray-900 mb-20">404 - Страница не найдена</h1>
         <p class="lead text-gray-600 mb-30">
             Извините, но страница которую вы ищете не существует или была перемещена.
