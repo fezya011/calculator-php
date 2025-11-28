@@ -21,6 +21,11 @@ $router->get('/articles', 'App\Controllers\FrontController::articles');
 $router->get('/categories', 'App\Controllers\FrontController::showCategories');
 $router->get('/article/{slug}', 'App\Controllers\FrontController::showArticle');
 $router->get('/page/{name}', 'App\Controllers\FrontController::showPage');
+
+$router->get('/admin/login', 'App\Controllers\AdminController::login');
+$router->get('/admin/register', 'App\Controllers\AdminController::register');
+$router->get('/admin/dashboard', 'App\Controllers\AdminController::dashboard');
+
 $router->get('/{any:.*}', 'App\Controllers\FrontController::notFound');
 
 $response = $router->dispatch($request);

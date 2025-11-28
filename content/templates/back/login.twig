@@ -1,0 +1,92 @@
+{% extends "layout.twig" %}
+
+{% block styles %}
+    <link href="/assets/back/css/login.css" rel="stylesheet">
+{% endblock %}
+
+{% block page_header_and_breadcrumbs %}
+    <header class="auth-header">
+        <div class="container">
+            <h1>Вход в админ панель</h1>
+            <p class="auth-subtitle">Доступ к управлению контентом</p>
+        </div>
+    </header>
+{% endblock %}
+
+{% block content %}
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-icon">
+                <i class="fi-rr-lock"></i>
+            </div>
+
+            <form action="/admin/login" method="POST" class="auth-form" id="adminLoginForm">
+                <div class="form-group">
+                    <label for="username" class="form-label">Имя пользователя</label>
+                    <input type="text"
+                           id="username"
+                           name="username"
+                           class="form-input"
+                           required
+                           placeholder="Введите имя пользователя">
+                    <div class="form-error" id="usernameError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Пароль</label>
+                    <input type="password"
+                           id="password"
+                           name="password"
+                           class="form-input"
+                           required
+                           placeholder="Введите пароль">
+                    <div class="form-error" id="passwordError"></div>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember" class="checkbox-label">
+                        Запомнить меня
+                    </label>
+                </div>
+
+                <button type="submit" class="auth-button" id="submitButton">
+                    <span class="button-text">Войти</span>
+                    <span class="button-loader" style="display: none;">
+                    <i class="fi-rr-spinner"></i>
+                </span>
+                </button>
+            </form>
+
+            <div class="auth-links">
+                <p>Нет аккаунта? <a href="/admin/register" class="text-link">Зарегистрироваться</a></p>
+            </div>
+        </div>
+
+        <div class="auth-features">
+            <div class="feature-item">
+                <div class="feature-icon">📝</div>
+                <h3>Управление контентом</h3>
+                <p>Создавайте и редактируйте статьи, страницы и категории</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">📊</div>
+                <h3>Аналитика</h3>
+                <p>Отслеживайте статистику и производительность сайта</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">⚙️</div>
+                <h3>Настройки</h3>
+                <p>Настраивайте внешний вид и функциональность сайта</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block sidebar %}
+    {# Полностью переопределяем блок сайдбара - оставляем пустым #}
+{% endblock %}
+
+{% block java_script %}
+    <script src="/assets/js/admin-login.js"></script>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends "layout.twig" %}
+
+{% block styles %}
+    <link href="/assets/back/css/dashboard.css" rel="stylesheet">
+{% endblock %}
+
+{% block page_header_and_breadcrumbs %}
+    <header class="admin-header">
+        <div class="container">
+            <h1>Админ панель</h1>
+            <p class="admin-subtitle">Управление контентом и настройками</p>
+        </div>
+    </header>
+{% endblock %}
+
+{% block content %}
+    <div class="admin-container">
+        <div class="admin-stats">
+            <div class="stat-card">
+                <div class="stat-icon">📚</div>
+                <div class="stat-content">
+                    <h3>{{ all_articles_count }}</h3>
+                    <p>Всего статей</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📂</div>
+                <div class="stat-content">
+                    <h3>{{ categories|length }}</h3>
+                    <p>Категорий</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👁️</div>
+                <div class="stat-content">
+                    <h3>1.2k</h3>
+                    <p>Просмотров</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-actions">
+            <h2 class="section-title">Быстрые действия</h2>
+            <div class="actions-grid">
+                <a href="/admin/articles/new" class="action-card">
+                    <div class="action-icon">➕</div>
+                    <h3>Новая статья</h3>
+                    <p>Создать новую статью</p>
+                </a>
+                <a href="/admin/categories" class="action-card">
+                    <div class="action-icon">📂</div>
+                    <h3>Категории</h3>
+                    <p>Управление категориями</p>
+                </a>
+                <a href="/admin/pages" class="action-card">
+                    <div class="action-icon">📄</div>
+                    <h3>Страницы</h3>
+                    <p>Редактирование страниц</p>
+                </a>
+                <a href="/admin/settings" class="action-card">
+                    <div class="action-icon">⚙️</div>
+                    <h3>Настройки</h3>
+                    <p>Настройки сайта</p>
+                </a>
+            </div>
+        </div>
+
+        <div class="recent-articles">
+            <h2 class="section-title">Последние статьи</h2>
+            <div class="articles-list">
+                {% for article in articles|slice(0, 5) %}
+                    <div class="article-item">
+                        <div class="article-info">
+                            <h4>{{ article.title }}</h4>
+                            <p>{{ article.meta.category ?? 'Без категории' }} • {{ article.meta.date ? article.meta.date|date('d.m.Y') : 'Нет даты' }}</p>
+                        </div>
+                        <div class="article-actions">
+                            <a href="/admin/articles/edit/{{ article.slug }}" class="btn btn-sm">Редактировать</a>
+                            <a href="/article/{{ article.slug }}" class="btn btn-outline btn-sm">Просмотр</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <p>Статьи не найдены</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

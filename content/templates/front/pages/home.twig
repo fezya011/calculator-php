@@ -1,7 +1,7 @@
 {% extends "layout.twig" %}
 
 {% block styles %}
-    <link href="/assets/css/home.css" rel="stylesheet">
+    <link href="/assets/front/css/home.css" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -15,55 +15,63 @@
     <!-- Последние статьи -->
     <div class="section-articles mb-50">
         <h2 class="section-title">
-            <i class="fi-rr-flame me-2"></i>Последние статьи
+            Последние статьи
         </h2>
 
         {% if articles %}
             <div class="articles-grid">
                 {% for article in articles %}
                     <article class="article-card">
-                        <div class="article-header">
-                            <div class="article-title">
-                                <h3 class="h4 mb-0">
-                                    <a href="/article/{{ article.slug|e }}">
-                                        {{ article.title|e }}
-                                    </a>
-                                </h3>
-                            </div>
-                            {% if article.meta.category %}
-                                <div class="article-category" style="background: {{ (article.category_info.color ?? '#667eea')|e }}; color: white;">
-                                    {{ (article.category_info.icon ?? '📁')|e }} {{ article.meta.category|e }}
+                        {% if article.meta.image %}
+                            <div class="article-image" style="background-image: url('{{ article.meta.image|e('html_attr') }}');"></div>
+                        {% else %}
+                            <div class="article-image" style="background: linear-gradient(135deg, #1a1a1a 0%, #404040 100%);"></div>
+                        {% endif %}
+
+                        <div class="article-content">
+                            <div class="article-header">
+                                <div class="article-title">
+                                    <h3 class="h4 mb-0">
+                                        <a href="/article/{{ article.slug|e }}">
+                                            {{ article.title|e }}
+                                        </a>
+                                    </h3>
                                 </div>
-                            {% endif %}
+                                {% if article.meta.category %}
+                                    <div class="article-category">
+                                        {{ article.meta.category|e }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="article-meta">
+                                <span class="meta-item">
+                                    <i class="fi-rr-user me-1"></i>{{ (article.meta.author ?? 'Автор')|e }}
+                                </span>
+                                <span class="meta-item">
+                                    <i class="fi-rr-calendar me-1"></i>{{ article.meta.date ? article.meta.date|date('d.m.Y') : 'Не указана' }}
+                                </span>
+                                <span class="meta-item">
+                                    <i class="fi-rr-time me-1"></i>
+                                    ~{{ ((article.content|striptags|split(' ')|length) / 200)|round(0, 'ceil') }} мин
+                                </span>
+                            </div>
+
+                            <p class="article-excerpt">
+                                {{ (article.excerpt ?? article.content|striptags|slice(0, 150) ~ '...')|e }}
+                            </p>
+
+                            <a href="/article/{{ article.slug|e }}" class="article-button">
+                                Читать статью
+                            </a>
                         </div>
-
-                        <div class="article-meta">
-                            <span class="meta-item">
-                                <i class="fi-rr-user me-1"></i>{{ (article.meta.author ?? 'Автор')|e }}
-                            </span>
-                            <span class="meta-item">
-                                <i class="fi-rr-calendar me-1"></i>{{ article.meta.date ? article.meta.date|date('d.m.Y') : 'Не указана' }}
-                            </span>
-                            <span class="meta-item" id="reading-time">
-                                <i class="fi-rr-time"></i>
-                                Время чтения: ~{{ ((article.content|striptags|split(' ')|length) / 200)|round(0, 'ceil') }} мин
-                            </span>
-                        </div>
-
-                        <p class="article-excerpt">
-                            {{ (article.excerpt ?? 'Описание статьи отсутствует')|e }}
-                        </p>
-
-                        <a href="/article/{{ article.slug|e }}" class="btn btn-primary btn-sm">
-                            Читать далее
-                        </a>
                     </article>
                 {% endfor %}
             </div>
 
             <div class="text-center mt-30">
                 <a href="/articles" class="btn btn-primary">
-                    <i class="fi-rr-books me-2"></i>Все статьи
+                    Смотреть все статьи
                 </a>
             </div>
         {% else %}
@@ -79,7 +87,7 @@
     <!-- Особенности -->
     <div class="section-features">
         <h2 class="section-title">
-            <i class="fi-rr-star me-2"></i>Возможности
+            Возможности платформы
         </h2>
 
         <div class="features-grid">
@@ -109,5 +117,5 @@
 {% endblock %}
 
 {% block java_script %}
-    <script src="/assets/js/readTime.js"></script>
+    <script src="/assets/front/js/readTime.js"></script>
 {% endblock %}
