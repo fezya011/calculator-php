@@ -179,8 +179,8 @@
             {% for article in articles %}
                 <div class="article-item {% if loop.first %}featured-article{% endif %}">
                     <a href="/article/{{ article.slug|e }}" class="article-card">
-                        {% if article.meta.image %}
-                            <div class="article-thumb" style="background-image: url({{ article.meta.image|e }});"></div>
+                        {% if article.meta.cover_image %}
+                            <div class="article-thumb" style="background-image: url({{ article.meta.cover_image|e }});"></div>
                         {% else %}
                             <div class="article-thumb" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
                         {% endif %}

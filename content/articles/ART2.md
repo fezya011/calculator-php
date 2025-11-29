@@ -2,6 +2,7 @@
 title: TEST 22
 author: Администратор
 date: 2024-01-19
+cover_image: public/images/image.jpg
 ---
 
 # TEST2!

@@ -14,13 +14,13 @@ use Twig\Loader\FilesystemLoader;
 $container = new League\Container\Container();
 
 $container->add(Environment::class, function () {
-    $loader = new FilesystemLoader([
+    $loader = new FilesystemLoader(array(
         VIEWS_PATH . '/front/pages',
         VIEWS_PATH . '/front/blocks',
         VIEWS_PATH . '/front',
         VIEWS_PATH . '/',
         VIEWS_PATH . '/back',
-    ]);
+    ));
     return new Environment($loader);
 });
 

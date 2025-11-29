@@ -3,6 +3,7 @@ title: Тестовая статья
 category: php
 author: Администратор
 date: 2024-01-15
+cover_image: public/images/image2.jpg
 ---
 
 # Это тестовая статья

@@ -45,8 +45,11 @@ class ContentParser
 
         $parsed = $this->parseMarkdownWithFrontMatter($content);
 
+
         // Генерируем УНИКАЛЬНЫЙ ID на основе slug и содержимого файла
         $id = md5($slug . filemtime($file));
+
+        $coverImage = $parsed['meta']['cover_image'] ?? null;
 
         return [
             'id' => $id,
@@ -55,7 +58,8 @@ class ContentParser
             'content' => $parsed['content'],
             'meta' => $parsed['meta'],
             'excerpt' => $this->helper::getExcerpt($parsed['content']),
-            'category_info' => $this->getCategoryInfo($parsed['meta']['category'] ?? '')
+            'category_info' => $this->getCategoryInfo($parsed['meta']['category'] ?? ''),
+            'image' => $coverImage
         ];
     }
 
@@ -96,7 +100,8 @@ class ContentParser
                 'content' => $parsed['content'],
                 'meta' => $parsed['meta'],
                 'excerpt' => $this->helper::getExcerpt($parsed['content']),
-                'category_info' => $this->getCategoryInfo($categoryName)
+                'category_info' => $this->getCategoryInfo($categoryName),
+                'image' => $parsed['meta']['cover_image'] ?? null
             ];
         }
 

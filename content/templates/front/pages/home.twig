@@ -1,10 +1,67 @@
 {% extends "layout.twig" %}
 
 {% block styles %}
-    <link href="/assets/front/css/home.css" rel="stylesheet">
+    <link href="/public/assets/front/css/home.css" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
+    <!-- Hero Section - White Version -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    🚀 Flat File CMS
+                </div>
+                <h1 class="hero-title">
+                    Создавайте актуальные статьи
+                </h1>
+                <p class="hero-description">
+                    Мощная система управления контентом на чистом PHP.
+                    Быстро, безопасно и просто. Идеально для блогов,
+                    лендингов и небольших сайтов.
+                </p>
+                <div class="hero-actions">
+                    <a href="/articles" class="btn btn-primary btn-lg">
+                        <i class="fi-rr-book-open me-2"></i>
+                        Читать статьи
+                    </a>
+                    <a href="/about" class="btn btn-outline-dark btn-lg">
+                        <i class="fi-rr-info me-2"></i>
+                        Узнать больше
+                    </a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="code-window">
+                    <div class="window-header">
+                        <div class="window-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                        <div class="window-title">article.md</div>
+                    </div>
+                    <div class="code-content">
+                        <pre><code>---
+title: "Моя статья"
+category: "Programming"
+date: "2024-01-15"
+---
+
+# Заголовок статьи
+
+Содержание в **Markdown**...</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-background">
+            <div class="gradient-orbit"></div>
+            <div class="gradient-orbit"></div>
+            <div class="gradient-orbit"></div>
+        </div>
+    </section>
+
     <!-- Контент страницы -->
     {% if content %}
         <div class="page-content mb-40">
@@ -22,8 +79,8 @@
             <div class="articles-grid">
                 {% for article in articles %}
                     <article class="article-card">
-                        {% if article.meta.image %}
-                            <div class="article-image" style="background-image: url('{{ article.meta.image|e('html_attr') }}');"></div>
+                        {% if article.meta.cover_image %}
+                            <div class="article-image" style="background-image: url('{{ article.meta.cover_image|e('html_attr') }}');"></div>
                         {% else %}
                             <div class="article-image" style="background: linear-gradient(135deg, #1a1a1a 0%, #404040 100%);"></div>
                         {% endif %}
@@ -112,10 +169,31 @@
                     Оптимизированная система без лишних зависимостей
                 </p>
             </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3 class="feature-title">Безопасность</h3>
+                <p class="feature-description">
+                    Защита от XSS, CSRF атак. Хранение данных в файлах
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3 class="feature-title">Красивый дизайн</h3>
+                <p class="feature-description">
+                    Современный адаптивный дизайн с анимациями
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🚀</div>
+                <h3 class="feature-title">Легкий запуск</h3>
+                <p class="feature-description">
+                    Установка за 5 минут. Не требует базы данных
+                </p>
+            </div>
         </div>
     </div>
 {% endblock %}
 
 {% block java_script %}
-    <script src="/assets/front/js/readTime.js"></script>
+    <script src="/public/assets/front/js/readTime.js"></script>
 {% endblock %}
