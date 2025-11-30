@@ -1,0 +1,28 @@
+/* Layout Styles */
+.main {
+    margin-left: 100px; /* Ширина сайдбара */
+    min-height: calc(100vh - 120px);
+    transition: margin-left 0.3s ease;
+}
+
+.main-content-wrapper {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    .main {
+        margin-left: 0;
+    }
+
+    .mobile-sidebar-open .main {
+        margin-left: 0;
+    }
+
+    .main-content-wrapper {
+        padding: 0 15px;
+    }
+}

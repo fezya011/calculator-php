@@ -6,57 +6,55 @@
     <title>{{ title ?? 'FlatCMS' }}</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.2.0/css/fork-awesome.min.css">
     <link href="/public/assets/front/css/layout.css" rel="stylesheet">
     <link href="/public/assets/front/css/sidebar.css" rel="stylesheet">
     <link href="/public/assets/front/css/header.css" rel="stylesheet">
     <link href="/public/assets/front/css/footer.css" rel="stylesheet">
 
-
     {% block styles %}{% endblock %}
 </head>
 <body>
 
-<header class="header sticky-bar bg-gray-900">
-    <div class="container">
-        {% block main_header %}
-              {% include "/front/blocks/header.twig" %}
-        {% endblock %}
-    </div>
+<!-- Сайдбар и переключатели -->
+{% include "/front/blocks/sidebar.twig" %}
+
+<header class="header sticky-bar">
+    {% block main_header %}
+        {% include "/front/blocks/header.twig" %}
+    {% endblock %}
 </header>
 
 <main class="main">
-    <div class="cover-home3">
-        <div class="container">
-            <div class="row">
-                <div class="col-xl-1"></div>
-                <div class="col-xl-10 col-lg-12">
-                    {% block page_header_and_breadcrumbs %}
-                    {% endblock %}
-                    <div class="box-list-posts mt-40">
-                        <div class="row">
-                            {% block error %}
-                            {% endblock %}
-                            <div class="col-lg-8">
-                                {% block content %}
-                                {% endblock %}
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="sidebar">
-                                    {% block sidebar %}
-                                     {% include "/front/blocks/sidebar.twig" %}
-                                    {% endblock %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="main-content-wrapper">
+        {% block page_header_and_breadcrumbs %}
+        {% endblock %}
+
+        {% block error %}
+        {% endblock %}
+
+        {% block content %}
+        {% endblock %}
     </div>
 </main>
 
 {% include "/front/blocks/footer.twig" %}
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Скролл эффект для хедера
+    window.addEventListener('scroll', function() {
+        const header = document.querySelector('.header.sticky-bar');
+        if (window.scrollY > 20) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+    });
+</script>
+
+{% block scripts %}{% endblock %}
 </body>
 </html>

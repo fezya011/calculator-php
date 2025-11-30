@@ -1,20 +1,21 @@
 <?php
 namespace App\Core;
 
+use Parsedown;
+
 class ContentParser
 {
-    public $file_manager;
-    public $helper;
+    private Parsedown $md_parser;
 
     public function __construct()
     {
-        $this->file_manager = new FileManager();
-        $this->helper = new Helper();
+        $this->md_parser = new Parsedown();
+        $this->md_parser->setSafeMode(true);
     }
 
-    public function getPage($name)
+    public function getPage(string $name): ?array
     {
-        $file = ROOT_DIR."/content/pages/{$name}.php";
+        $file = ROOT_DIR . "/content/pages/{$name}.php";
 
         if (!file_exists($file)) {
             return null;
@@ -33,101 +34,80 @@ class ContentParser
         ];
     }
 
-    public function getArticle($slug)
+    public function getArticle(string $slug): ?array
     {
-        $file = ROOT_DIR."/content/articles/{$slug}.md";
+        $file = ROOT_DIR . "/content/articles/{$slug}.md";
 
         if (!file_exists($file)) {
             return null;
         }
 
         $content = file_get_contents($file);
-
-        $parsed = $this->parseMarkdownWithFrontMatter($content);
-
-
-        // Генерируем УНИКАЛЬНЫЙ ID на основе slug и содержимого файла
-        $id = md5($slug . filemtime($file));
-
-        $coverImage = $parsed['meta']['cover_image'] ?? null;
+        $parsed = $this->parseContent($content);
 
         return [
-            'id' => $id,
             'slug' => $slug,
-            'title' => $parsed['meta']['title'] ?? 'Статья',
+            'title' => $parsed['meta']['title'] ?? ucfirst($slug),
             'content' => $parsed['content'],
             'meta' => $parsed['meta'],
-            'excerpt' => $this->helper::getExcerpt($parsed['content']),
+            'excerpt' => $this->getExcerpt(strip_tags($parsed['content'])),
             'category_info' => $this->getCategoryInfo($parsed['meta']['category'] ?? ''),
-            'image' => $coverImage
+            'image' => $parsed['meta']['cover_image'] ?? null,
+            'date' => $parsed['meta']['date'] ?? date('Y-m-d', filemtime($file))
         ];
     }
 
-
-    public function getArticles($limit = null, $category = null)
+    public function getArticles(?int $limit = null, ?string $category = null): array
     {
+        $files = glob(ROOT_DIR . '/content/articles/*.md') ?: [];
         $articles = [];
-        $contentPath = ROOT_DIR . '/content/articles/';
-
-        if (!is_dir($contentPath)) {
-            return $articles;
-        }
-
-        $files = glob($contentPath . '*.md');
-
-        usort($files, function($a, $b) {
-            return filemtime($b) - filemtime($a);
-        });
 
         foreach ($files as $file) {
             $slug = pathinfo($file, PATHINFO_FILENAME);
             $content = file_get_contents($file);
-            $parsed = $this->parseMarkdownWithFrontMatter($content);
+            $parsed = $this->parseContent($content);
 
-            // Фильтрация по категории
             if ($category && ($parsed['meta']['category'] ?? '') !== $category) {
                 continue;
             }
 
-            // Генерируем УНИКАЛЬНЫЙ ID для каждой статьи
-            $id = md5($slug . filemtime($file));
-            $categoryName = $parsed['meta']['category'] ?? 'Без категории';
-
             $articles[] = [
-                'id' => $id,
                 'slug' => $slug,
-                'title' => $parsed['meta']['title'] ?? 'Статья',
+                'title' => $parsed['meta']['title'] ?? ucfirst($slug),
                 'content' => $parsed['content'],
                 'meta' => $parsed['meta'],
-                'excerpt' => $this->helper::getExcerpt($parsed['content']),
-                'category_info' => $this->getCategoryInfo($categoryName),
-                'image' => $parsed['meta']['cover_image'] ?? null
+                'excerpt' => $this->getExcerpt(strip_tags($parsed['content'])),
+                'category_info' => $this->getCategoryInfo($parsed['meta']['category'] ?? ''),
+                'image' => $parsed['meta']['cover_image'] ?? null,
+                'date' => $parsed['meta']['date'] ?? date('Y-m-d', filemtime($file))
             ];
+
+            if ($limit && count($articles) >= $limit) {
+                break;
+            }
         }
 
-        if ($limit) {
-            $articles = array_slice($articles, 0, $limit);
-        }
-
+        usort($articles, fn($a, $b) => strtotime($b['date']) - strtotime($a['date']));
         return $articles;
     }
 
-    public function getCategories()
+    public function getArticlesByCategory(string $category): array
     {
-        $categories = [];
-        $categoriesFile = ROOT_DIR . '/content/categories.md';
+        return $this->getArticles(null, $category);
+    }
 
-        // Читаем категории из файла
+    public function getCategories(): array
+    {
+        $categoriesFile = ROOT_DIR . '/content/categories.md';
+        $categories = [];
+
         if (file_exists($categoriesFile)) {
             $content = file_get_contents($categoriesFile);
             $lines = explode("\n", $content);
 
             foreach ($lines as $line) {
                 $line = trim($line);
-                // Пропускаем комментарии и пустые строки
-                if (empty($line) || strpos($line, '#') === 0) {
-                    continue;
-                }
+                if (empty($line) || str_starts_with($line, '#')) continue;
 
                 $parts = explode('|', $line);
                 if (count($parts) >= 4) {
@@ -141,29 +121,79 @@ class ContentParser
             }
         }
 
-        // Если файла нет, создаем категории из статей
-        if (empty($categories)) {
-            $categories = $this->getCategoriesFromArticles();
+        return empty($categories) ? $this->extractCategoriesFromArticles() : $categories;
+    }
+
+    public function getCategoriesWithCounts(): array
+    {
+        $categories = $this->getCategories();
+        $articles = $this->getArticles();
+
+        foreach ($categories as &$category) {
+            $category['articles_count'] = count(array_filter($articles,
+                fn($article) => ($article['meta']['category'] ?? '') === $category['name']
+            ));
         }
 
         return $categories;
     }
 
-    private function getCategoriesFromArticles()
+    private function parseContent(string $content): array
     {
-        $categories = [];
-        $contentPath = ROOT_DIR . '/content/articles/';
-
-        if (!is_dir($contentPath)) {
-            return $categories;
+        if (preg_match('/^---\s*\R(.*?)\R---\s*\R?(.*)$/s', $content, $matches)) {
+            return [
+                'meta' => $this->parseFrontMatter($matches[1]),
+                'content' => $this->md_parser->text(trim($matches[2]))
+            ];
         }
 
-        $files = glob($contentPath . '*.md');
+        return [
+            'meta' => [],
+            'content' => $this->md_parser->text(trim($content))
+        ];
+    }
+
+    private function parseFrontMatter(string $yaml): array
+    {
+        $data = [];
+
+        foreach (explode("\n", $yaml) as $line) {
+            $line = trim($line);
+            if (empty($line) || !str_contains($line, ':')) continue;
+
+            [$key, $value] = explode(':', $line, 2);
+            $data[trim($key)] = trim(trim($value), '"\'');
+        }
+
+        return $data;
+    }
+
+    private function getCategoryInfo(string $categoryName): array
+    {
+        $categories = $this->getCategories();
+
+        foreach ($categories as $category) {
+            if ($category['name'] === $categoryName) {
+                return $category;
+            }
+        }
+
+        return [
+            'name' => $categoryName,
+            'description' => 'Статьи в категории ' . $categoryName,
+            'color' => '#667eea',
+            'icon' => '📁'
+        ];
+    }
+
+    private function extractCategoriesFromArticles(): array
+    {
+        $categories = [];
+        $files = glob(ROOT_DIR . '/content/articles/*.md') ?: [];
 
         foreach ($files as $file) {
             $content = file_get_contents($file);
-            $parsed = $this->parseMarkdownWithFrontMatter($content);
-
+            $parsed = $this->parseContent($content);
             $categoryName = $parsed['meta']['category'] ?? 'Без категории';
 
             if (!isset($categories[$categoryName])) {
@@ -179,93 +209,20 @@ class ContentParser
         return array_values($categories);
     }
 
-    public function getCategoryInfo($categoryName)
+    private function getExcerpt(string $content, int $length = 150): string
     {
-        $categories = $this->getCategories();
+        $text = preg_replace('/\s+/', ' ', $content);
 
-        foreach ($categories as $category) {
-            if ($category['name'] === $categoryName) {
-                return $category;
-            }
+        if (mb_strlen($text) > $length) {
+            $text = mb_substr($text, 0, $length) . '...';
         }
 
-        // Если категория не найдена, возвращаем базовую информацию
-        return [
-            'name' => $categoryName,
-            'description' => 'Статьи в категории ' . $categoryName,
-            'color' => '#667eea',
-            'icon' => '📁'
-        ];
+        return $text;
     }
 
-    public function getArticlesByCategory($category)
+    private function getRandomColor(): string
     {
-        return $this->getArticles(null, $category);
-    }
-
-    public function getCategoriesWithCounts(): array
-    {
-        $categories = $this->getCategories();
-        $allArticles = $this->getArticles();
-
-        foreach ($categories as &$category) {
-            $category['articles_count'] = count(array_filter($allArticles, function($article) use ($category) {
-                return ($article['meta']['category'] ?? '') === $category['name'];
-            }));
-        }
-
-        return $categories;
-    }
-
-
-    private function getRandomColor()
-    {
-        $colors = ['#e74c3c', '#3498db', '#9b59b6', '#2ecc71', '#f39c12',
-            '#1abc9c', '#e67e22', '#c0392b', '#7f8c8d', '#8e44ad'];
+        $colors = ['#e74c3c', '#3498db', '#9b59b6', '#2ecc71', '#f39c12'];
         return $colors[array_rand($colors)];
-    }
-
-    private function parseMarkdownWithFrontMatter($content)
-    {
-        $pattern = '/^---\s*(.*?)\s*---\s*(.*)$/s';
-
-        if (preg_match($pattern, $content, $matches)) {
-            $frontMatter = $this->parseYaml($matches[1]);
-            $body = trim($matches[2]);
-            return [
-                'meta' => $frontMatter,
-                'content' => $this->file_manager->parseToHtml($body)
-            ];
-        }
-
-        return [
-            'meta' => [],
-            'content' => $this->file_manager->parseToHtml($content)
-        ];
-    }
-
-    private function parseYaml($yaml)
-    {
-        $lines = explode("\n", $yaml);
-        $data = [];
-
-        foreach ($lines as $line) {
-            $line = trim($line);
-            if (empty($line)) continue;
-
-            if (strpos($line, ':') !== false) {
-                list($key, $value) = explode(':', $line, 2);
-                $key = trim($key);
-                $value = trim($value);
-
-                if ($key === 'date' && strtotime($value)) {
-                    $value = date('Y-m-d', strtotime($value));
-                }
-
-                $data[$key] = $value;
-            }
-        }
-
-        return $data;
     }
 }

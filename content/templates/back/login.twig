@@ -20,7 +20,7 @@
                 <i class="fi-rr-lock"></i>
             </div>
 
-            <form action="/admin/login" method="POST" class="auth-form" id="adminLoginForm">
+            <form action="/login" method="POST" class="auth-form" id="adminLoginForm">
                 <div class="form-group">
                     <label for="username" class="form-label">Имя пользователя</label>
                     <input type="text"
@@ -43,13 +43,6 @@
                     <div class="form-error" id="passwordError"></div>
                 </div>
 
-                <div class="form-group checkbox-group">
-                    <input type="checkbox" id="remember" name="remember">
-                    <label for="remember" class="checkbox-label">
-                        Запомнить меня
-                    </label>
-                </div>
-
                 <button type="submit" class="auth-button" id="submitButton">
                     <span class="button-text">Войти</span>
                     <span class="button-loader" style="display: none;">
@@ -58,9 +51,6 @@
                 </button>
             </form>
 
-            <div class="auth-links">
-                <p>Нет аккаунта? <a href="/admin/register" class="text-link">Зарегистрироваться</a></p>
-            </div>
         </div>
 
         <div class="auth-features">
@@ -85,8 +75,4 @@
 
 {% block sidebar %}
     {# Полностью переопределяем блок сайдбара - оставляем пустым #}
-{% endblock %}
-
-{% block java_script %}
-    <script src="/assets/js/admin-login.js"></script>
 {% endblock %}

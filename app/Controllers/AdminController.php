@@ -26,14 +26,9 @@ class AdminController
         return $response;
     }
 
-    public function login(ServerRequestInterface $request): ResponseInterface
+    public function index(ServerRequestInterface $request): ResponseInterface
     {
-        $page = $this->parser->getPage('login');
-        $categories = $this->parser->getCategoriesWithCounts();
-        $recentArticles = $this->parser->getArticles(3);
-
-        $html = $this->admin_view->login($page, $categories, $recentArticles);
-        return $this->responseWrapper($html);
+        return $this->dashboard($request);
     }
 
     public function dashboard(ServerRequestInterface $request): ResponseInterface

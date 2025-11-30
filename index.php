@@ -1,10 +1,10 @@
-<?php
-// Включите буферизацию в самом начале
-if (ob_get_level()) ob_end_clean();
+<?php declare(strict_types=1);
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 ob_start();
 
-echo "ROOT_DIR: " . $_SERVER['DOCUMENT_ROOT'] . "<br>";
-echo "Current dir: " . __DIR__ . "<br>";
+use App\Middlewares\AuthMiddleware;
 
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/config/constants.php';
@@ -28,16 +28,17 @@ $router->get('/categories', 'App\Controllers\FrontController::showCategories');
 $router->get('/article/{slug}', 'App\Controllers\FrontController::showArticle');
 $router->get('/page/{name}', 'App\Controllers\FrontController::showPage');
 
-$router->get('/admin/login', 'App\Controllers\AdminController::login');
-$router->get('/admin/register', 'App\Controllers\AdminController::register');
-$router->get('/admin/dashboard', 'App\Controllers\AdminController::dashboard');
+$router->get('/login', 'App\Controllers\AuthController::showLoginForm');
+$router->post('/login', 'App\Controllers\AuthController::login');
+$router->get('/logout', 'App\Controllers\AuthController::logout');
 
-$router->get('/{any:.*}', 'App\Controllers\FrontController::notFound');
+$router->get('/admin/dashboard', 'App\Controllers\AdminController::index')->middleware(new AuthMiddleware());
+
+$router->get('/{any}', 'App\Controllers\FrontController::notFound');
 
 $response = $router->dispatch($request);
-
-// Очистите буфер перед отправкой ответа
-ob_end_clean();
+$buffer = ob_get_contents();
+ob_clean();
 
 // send the response to the browser
 (new Laminas\HttpHandlerRunner\Emitter\SapiEmitter)->emit($response);

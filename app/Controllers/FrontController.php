@@ -79,7 +79,7 @@ class FrontController
 
         if ($category) {
             $articles = $this->parser->getArticlesByCategory($category);
-            $categoryInfo = $this->parser->getCategoryInfo($category);
+
         } else {
             $articles = $this->parser->getArticles();
             $categoryInfo = null;
